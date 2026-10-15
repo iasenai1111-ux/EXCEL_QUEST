@@ -51,6 +51,24 @@ class SoundManager {
       const savedSfxEnabled = localStorage.getItem('excel_quest_sfx_enabled');
       if (savedSfxEnabled !== null) this.sfxEnabled = savedSfxEnabled === 'true';
 
+      const savedUrl = localStorage.getItem('excel_quest_original_audio_url');
+      if (savedUrl) {
+        try {
+          const parsed = new URL(savedUrl);
+          if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+            this.originalAudio = new Audio();
+            this.originalAudio.src = parsed.href;
+            this.originalAudio.loop = true;
+            this.originalAudio.preload = 'none';
+            this.customAudioName = 'Link salvo';
+            this.originalAudio.onerror = () => {
+              this.originalAudioError = 'O link salvo não está disponível. Atualize-o nas configurações de áudio.';
+              this.notify();
+            };
+          }
+        } catch { /* Ignore an invalid previously saved URL */ }
+      }
+
       const savedMode = localStorage.getItem('excel_quest_bgm_mode');
       if (savedMode === 'original' || savedMode === 'bit') {
         this.bgmMode = savedMode;
@@ -565,6 +583,11 @@ class SoundManager {
     return this.customAudioName;
   }
 
+  public getSavedOriginalAudioUrl(): string {
+    try { return localStorage.getItem('excel_quest_original_audio_url') || ''; }
+    catch { return ''; }
+  }
+
   public getOriginalAudioError(): string {
     return this.originalAudioError;
   }
@@ -607,6 +630,7 @@ class SoundManager {
       throw new Error('Selecione um arquivo de áudio válido.');
     }
     const url = URL.createObjectURL(file);
+    try { localStorage.removeItem('excel_quest_original_audio_url'); } catch {}
     this.setOriginalAudioSource(url, file.name, true);
   }
 
@@ -621,6 +645,7 @@ class SoundManager {
       throw new Error('Esse endereço é uma página de música, não um arquivo de áudio. Utilize uma URL direta de MP3/OGG.');
     }
     this.setOriginalAudioSource(parsed.href, name || 'Áudio por link', false);
+    try { localStorage.setItem('excel_quest_original_audio_url', parsed.href); } catch {}
   }
 
   public stopBGM() {
