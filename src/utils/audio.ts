@@ -637,12 +637,17 @@ class SoundManager {
   public setOriginalAudioUrl(rawUrl: string, name?: string) {
     let parsed: URL;
     try { parsed = new URL(rawUrl.trim()); }
-    catch { throw new Error('Digite uma URL completa, começando com https://'); }
+    catch { throw new Error('Digite um endereço completo começando com https://'); }
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      throw new Error('Somente URLs HTTP ou HTTPS são aceitas.');
+      throw new Error('O áudio precisa de um endereço HTTP ou HTTPS.');
     }
-    if (/^(www\\.)?(youtube\\.com|youtu\\.be|open\\.spotify\\.com|music\\.apple\\.com|soundcloud\\.com)$/i.test(parsed.hostname)) {
-      throw new Error('Esse endereço é uma página de música, não um arquivo de áudio. Utilize uma URL direta de MP3/OGG.');
+    const host = parsed.hostname.toLowerCase().replace(/^www\\./, '');
+    const unsupportedHosts = ['youtube.com', 'youtu.be', 'music.youtube.com', 'spotify.com', 'open.spotify.com', 'music.apple.com', 'soundcloud.com'];
+    if (unsupportedHosts.some(domain => host === domain || host.endsWith('.' + domain))) {
+      throw new Error('Links de páginas do YouTube, Spotify e similares não são arquivos de áudio. Use MP3/OGG direto ou selecione um arquivo do computador.');
+    }
+    if (!/\\.(mp3|ogg|wav|m4a|aac)$/i.test(parsed.pathname)) {
+      throw new Error('Este link não parece apontar para um arquivo MP3, OGG, WAV, M4A ou AAC. Cole a URL direta do áudio.');
     }
     this.setOriginalAudioSource(parsed.href, name || 'Áudio por link', false);
     try { localStorage.setItem('excel_quest_original_audio_url', parsed.href); } catch {}
@@ -889,7 +894,8 @@ class SoundManager {
       const playPromise = this.originalAudio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          this.playStudioRockSynthesizerLoop();
+          this.originalAudioError = 'O navegador não conseguiu reproduzir o link. Verifique o arquivo, a hospedagem e permissões; use MP3 local como alternativa.';
+          this.notify();
         });
       }
       return;
