@@ -52,9 +52,9 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
       setCalculatedResult(null);
 
       // Focus input after modal mount
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 150);
+      if (typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches) {
+        setTimeout(() => inputRef.current?.focus(), 150);
+      }
     }
   }, [isOpen, stage]);
 
@@ -213,19 +213,19 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
   const isCellHighlighted = attemptsCount >= 2;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#101B35]/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-[#101B35]/80 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92dvh] min-h-0 flex flex-col bg-[#101B35] border-0 sm:border-2 border-[#334E77] rounded-none sm:rounded-3xl shadow-2xl overflow-hidden">
         
         {/* Top Excel Green Header Bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#15803D] to-[#166534] text-white">
-          <div className="flex items-center gap-2">
+        <div className="shrink-0 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-[#15803D] to-[#166534] text-white">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="w-7 h-7 bg-white text-[#107c41] font-extrabold text-sm flex items-center justify-center rounded shadow">
               X
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm tracking-wide">Terminal Excel SENAI</span>
-                <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-950/60 text-emerald-200 rounded-full border border-emerald-400/40">
+                <span className="hidden sm:inline px-2 py-0.5 text-xs font-semibold bg-emerald-950/60 text-emerald-200 rounded-full border border-emerald-400/40">
                   {stage.title}
                 </span>
               </div>
@@ -269,7 +269,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
         )}
 
         {/* Excel Formula Bar (fx) */}
-        <div className="p-3 bg-[#0d162d] border-b border-slate-700/80 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+        <div className="shrink-0 p-2 sm:p-3 bg-[#0d162d] border-b border-slate-700/80 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
           {/* Name Box */}
           <div className="flex items-center gap-2">
             <div className="w-16 px-2 py-1.5 bg-[#172545] border border-slate-600 rounded text-center font-mono font-bold text-emerald-400 text-sm shadow-inner">
@@ -281,7 +281,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
           </div>
 
           {/* Formula Input */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <input
               ref={inputRef}
               type="text"
@@ -291,10 +291,10 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
               onKeyDown={handleKeyDown}
               disabled={isCompleted}
               placeholder={`Digite a fórmula para ${targetCellKey} (ex: ${activeChallenge.acceptedFormulasDescription.split(' ')[0]})...`}
-              className="w-full pl-3 pr-24 py-1.5 bg-[#080d1a] border-2 border-emerald-500/60 focus:border-emerald-400 rounded-lg text-emerald-200 font-mono text-sm tracking-wider focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition shadow-inner"
+              className="w-full min-w-0 pl-3 pr-3 sm:pr-24 py-2 bg-[#080d1a] border-2 border-emerald-500/60 focus:border-emerald-400 rounded-lg text-emerald-200 font-mono text-base sm:text-sm tracking-wider focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition shadow-inner"
             />
             {previewVal !== null && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono px-2 py-0.5 bg-emerald-950/80 text-emerald-300 rounded border border-emerald-500/40">
+              <div className="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono px-2 py-0.5 bg-emerald-950/80 text-emerald-300 rounded border border-emerald-500/40">
                 Resultado: <strong>{previewVal}</strong>
               </div>
             )}
@@ -312,7 +312,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
         </div>
 
         {/* Interactive Formula Assistant Buttons */}
-        <div className="px-3 py-2 bg-[#13203f] border-b border-slate-700/60 flex items-center gap-1.5 overflow-x-auto text-xs scrollbar-thin">
+        <div className="shrink-0 px-2 sm:px-3 py-2 bg-[#13203f] border-b border-slate-700/60 flex items-center gap-1.5 overflow-x-auto text-xs scrollbar-thin">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">
             Inserir:
           </span>
@@ -412,7 +412,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
         </div>
 
         {/* Spreadsheet Grid Container */}
-        <div className="p-4 overflow-auto flex-1 bg-[#0b1328] min-h-[220px]">
+        <div className="p-2 sm:p-4 overflow-auto flex-1 min-h-0 bg-[#0b1328] overscroll-contain">
           <div className="inline-block min-w-full border border-slate-700/80 rounded-lg overflow-hidden shadow-xl bg-[#0e172e]">
             <table className="w-full border-collapse select-none text-left">
               <thead>
@@ -424,7 +424,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
                   {stage.grid.columns.map(col => (
                     <th
                       key={col}
-                      className="p-2 bg-[#172547] border border-slate-700/90 text-center text-xs font-bold text-slate-300 tracking-wider min-w-[110px]"
+                      className="p-2 bg-[#172547] border border-slate-700/90 text-center text-xs font-bold text-slate-300 tracking-wider min-w-[78px] sm:min-w-[110px]"
                     >
                       {col}
                     </th>
@@ -563,8 +563,8 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
         )}
 
         {/* Bottom Actions Bar */}
-        <div className="p-3 bg-[#0d162d] border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-slate-400 flex items-center gap-2">
+        <div className="shrink-0 p-2 sm:p-3 bg-[#0d162d] border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+          <div className="text-xs text-slate-400 hidden sm:flex items-center gap-2">
             <span>Dificuldade: <strong>Nível 1</strong></span>
             <span>•</span>
             <span>Célula Alvo: <strong className="text-amber-400">{targetCellKey}</strong></span>
