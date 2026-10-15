@@ -1,0 +1,6 @@
+{
+  "name": "EXCEL QUEST — A Aventura das Fórmulas",
+  "description": "Videogame educacional interativo de Excel para alunos iniciantes do SENAI. Explore cenários 2D, resolva desafios com mini-planilha interativa e pratique no Excel real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
