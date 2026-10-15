@@ -8,8 +8,8 @@
 - **Instrutor de Formação Profissional do SENAI-SP:** Rafael Pereira  
 - **Unidade de Ensino:** Escola SENAI “Orlando Laviero Ferraiuolo”  
 - **Disciplina:** Informática Básica, Gestão & Planilhas Eletrônicas (Microsoft Excel)  
-- **Repositório Oficial:** [https://github.com/iasenai1111-ux/senaizinho](https://github.com/iasenai1111-ux/senaizinho)  
-- **Acesso Online (GitHub Pages):** [https://iasenai1111-ux.github.io/senaizinho/](https://iasenai1111-ux.github.io/senaizinho/)
+- **Repositório Oficial:** [https://github.com/iasenai1111-ux/EXCEL_QUEST](https://github.com/iasenai1111-ux/EXCEL_QUEST)  
+- **Acesso Online (GitHub Pages):** [https://iasenai1111-ux.github.io/EXCEL_QUEST/](https://iasenai1111-ux.github.io/EXCEL_QUEST/)
 
 ---
 
@@ -75,20 +75,20 @@ O jogo conta com um sistema de áudio completo com a lendária música **"Carry 
 O projeto já conta com o workflow automatizado do **GitHub Actions** em `.github/workflows/deploy.yml`.
 
 ### Como publicar:
-1. No repositório do GitHub (`https://github.com/iasenai1111-ux/senaizinho/settings/pages`):
+1. No repositório do GitHub (`https://github.com/iasenai1111-ux/EXCEL_QUEST/settings/pages`):
    - Em **Source**, selecione **GitHub Actions**.
 2. Faça o envio (push) das alterações:
    ```bash
    git add .
-   git commit -m "feat: SUPER SENAI BROS: EXCEL WORLD, modo original de áudio e atualizacoes"
+   git commit -m "feat: SUPER SENAI BROS: EXCEL WORLD - Painel do Professor Root, Gabaritos e Áudio Rock Original"
    git push origin main
    ```
    *(Ou com seu Token pessoal):*
    ```bash
-   git push https://<SEU_TOKEN_GITHUB>@github.com/iasenai1111-ux/senaizinho.git HEAD:main
+   git push https://<SEU_TOKEN_GITHUB>@github.com/iasenai1111-ux/EXCEL_QUEST.git HEAD:main
    ```
 3. O jogo estará disponível em instantes em:
-   👉 **`https://iasenai1111-ux.github.io/senaizinho/`**
+   👉 **`https://iasenai1111-ux.github.io/EXCEL_QUEST/`**
 
 ---
 

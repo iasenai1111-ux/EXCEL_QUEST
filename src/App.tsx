@@ -371,6 +371,14 @@ export default function App() {
               onGameOver={handleGameOver}
               isGodMode={isRootGodMode}
               onOpenSettings={() => setIsSettingsOpen(true)}
+              onShowEnding={() => {
+                soundManager.playVictory();
+                setIsVictoryOpen(true);
+              }}
+              onOpenTeacherDashboard={() => {
+                soundManager.playClick();
+                setIsTeacherDashboardOpen(true);
+              }}
               onReachExitPortal={() => {
                 if (currentStageId < LEVEL_1_STAGES.length) {
                   setCurrentStageId((prev) => prev + 1);
@@ -498,6 +506,26 @@ export default function App() {
           setIsTeacherDashboardOpen(false);
           setIsTrailerOpen(true);
         }}
+        onCompleteGame={() => {
+          setProgress((prev) => ({
+            ...prev,
+            highestUnlockedStageId: LEVEL_1_STAGES.length,
+            completedStages: LEVEL_1_STAGES.map((s) => s.id),
+            coins: 300,
+            xp: 1500,
+            medals: ['ouro_excel', 'mestre_formulas', 'senai_pro', 'speedrunner_excel'],
+          }));
+          setCurrentStageId(LEVEL_1_STAGES.length);
+          setIsTeacherDashboardOpen(false);
+          setIsVictoryOpen(true);
+          soundManager.playVictory();
+        }}
+        onJumpToStage={(stageId) => {
+          setCurrentStageId(stageId);
+          setIsTeacherDashboardOpen(false);
+          setGameMode('playing');
+        }}
+        currentStageId={currentStageId}
       />
 
       {/* 8. Achievements & Portable Sync Modal */}

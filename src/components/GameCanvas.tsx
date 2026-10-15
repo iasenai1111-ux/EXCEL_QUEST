@@ -583,7 +583,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
       // Player
       if (p.invulnerableTimer === 0 || Math.floor(tick / 4) % 2 === 0) {
-        drawMarioPlayer(ctx, p, tick);
+        drawMarioPlayer(ctx, p, tick, isGodMode);
       }
 
       // Particles
@@ -648,9 +648,35 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               SENAIZINHO
             </span>
             {isGodMode && (
-              <span className="px-2 py-0.5 bg-amber-500 text-slate-950 font-black rounded-lg text-[10px] animate-pulse">
-                🛡️ ROOT IMORTAL
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black rounded-lg text-[10px] animate-pulse shadow-md">
+                  👑 ROOT SUPERUSUÁRIO
+                </span>
+                {onShowEnding && (
+                  <button
+                    onClick={() => {
+                      soundManager.playVictory();
+                      onShowEnding();
+                    }}
+                    className="px-2 py-0.5 bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black rounded-lg text-[10px] shadow transition flex items-center gap-1"
+                    title="Exibir tela de encerramento / formatura para os alunos"
+                  >
+                    <span>🏆 ZERAR JOGO</span>
+                  </button>
+                )}
+                {onOpenTeacherDashboard && (
+                  <button
+                    onClick={() => {
+                      soundManager.playClick();
+                      onOpenTeacherDashboard();
+                    }}
+                    className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 border border-amber-500/50 rounded-lg text-[10px] font-bold transition flex items-center gap-1"
+                    title="Abrir Painel do Professor Root"
+                  >
+                    <span>⚙️ PAINEL</span>
+                  </button>
+                )}
+              </div>
             )}
             <span className="flex items-center gap-1 text-red-400 font-extrabold" title="Vidas Restantes">
               <Heart className="w-4 h-4 fill-red-500 animate-pulse" />
@@ -1227,7 +1253,8 @@ function drawMarioPlayer(
     isGrounded: boolean;
     animFrame: number;
   },
-  _tick: number
+  _tick: number,
+  isGodMode: boolean = false
 ) {
   ctx.save();
   ctx.translate(p.x, p.y);
@@ -1235,6 +1262,48 @@ function drawMarioPlayer(
   if (p.facing === 'left') {
     ctx.translate(p.w, 0);
     ctx.scale(-1, 1);
+  }
+
+  // Professor Root Golden Aura & Halo
+  if (isGodMode) {
+    const pulse = Math.sin(_tick * 0.12) * 5;
+    const auraRadius = 24 + pulse;
+    
+    // Outer radial glow
+    const glow = ctx.createRadialGradient(p.w / 2, p.h / 2, 8, p.w / 2, p.h / 2, auraRadius + 8);
+    glow.addColorStop(0, 'rgba(250, 204, 21, 0.45)');
+    glow.addColorStop(0.6, 'rgba(245, 158, 11, 0.25)');
+    glow.addColorStop(1, 'rgba(217, 119, 6, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(p.w / 2, p.h / 2, auraRadius + 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Floating Golden Crown above cap
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const cx = p.w / 2 - 8;
+    const cy = -16 + Math.sin(_tick * 0.1) * 2;
+    ctx.moveTo(cx, cy + 8);
+    ctx.lineTo(cx, cy + 2);
+    ctx.lineTo(cx + 4, cy + 5);
+    ctx.lineTo(cx + 8, cy);
+    ctx.lineTo(cx + 12, cy + 5);
+    ctx.lineTo(cx + 16, cy + 2);
+    ctx.lineTo(cx + 16, cy + 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Crown jewels
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(cx + 3, cy + 5, 2, 2);
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(cx + 7, cy + 4, 2, 2);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(cx + 11, cy + 5, 2, 2);
   }
 
   // Walk cycle stride
@@ -1247,12 +1316,12 @@ function drawMarioPlayer(
   ctx.fill();
 
   // Shoes / Boots
-  ctx.fillStyle = '#451a03'; // Brown Mario Shoes
+  ctx.fillStyle = isGodMode ? '#78350f' : '#451a03'; // Brown Mario Shoes
   ctx.fillRect(4, p.h - 6 + stride, 8, 6);
   ctx.fillRect(16, p.h - 6 - stride, 8, 6);
 
-  // Overalls (SENAI Royal Blue)
-  ctx.fillStyle = '#0284c7';
+  // Overalls (SENAI Royal Blue or Royal Purple for Root)
+  ctx.fillStyle = isGodMode ? '#1e1b4b' : '#0284c7';
   ctx.fillRect(6, 20, 18, 16);
 
   // Yellow Overall Buttons
@@ -1261,7 +1330,7 @@ function drawMarioPlayer(
   ctx.fillRect(19, 22, 3, 3);
 
   // Shirt under overalls (Red / Technical Orange)
-  ctx.fillStyle = '#ef4444';
+  ctx.fillStyle = isGodMode ? '#d97706' : '#ef4444';
   ctx.fillRect(4, 16, 22, 8);
   // Arms
   ctx.fillRect(2, 18, 4, 10);
@@ -1288,33 +1357,46 @@ function drawMarioPlayer(
   ctx.fillStyle = '#facc15';
   ctx.fillRect(18, 11, 5, 4);
 
-  // SENAI Cap (Red / Blue with visor)
-  ctx.fillStyle = '#ef4444';
+  // SENAI Cap (Red / Blue with visor or Gold for Root)
+  ctx.fillStyle = isGodMode ? '#b45309' : '#ef4444';
   ctx.fillRect(6, 4, 18, 6);
   // Cap Visor
   ctx.fillRect(16, 7, 10, 3);
 
   // White emblem circle with 'X' for Excel
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = isGodMode ? '#fef08a' : '#ffffff';
   ctx.beginPath();
   ctx.arc(12, 6, 4, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = '#107c41';
+  ctx.fillStyle = isGodMode ? '#854d0e' : '#107c41';
   ctx.font = 'bold 7px monospace';
   ctx.fillText('X', 10, 8);
 
-  // SENAIZINHO Floating Name Badge
-  ctx.fillStyle = '#0284c7';
-  ctx.fillRect(-2, -12, 34, 10);
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(-2, -12, 34, 10);
+  // Floating Name Badge
+  if (isGodMode) {
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(-6, -26, 44, 10);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-6, -26, 44, 10);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 7px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('SENAIZINHO', 15, -4);
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 7px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('PROFESSOR ROOT 👑', 16, -18);
+  } else {
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-2, -12, 34, 10);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-2, -12, 34, 10);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 7px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SENAIZINHO', 15, -4);
+  }
 
   ctx.restore();
 }

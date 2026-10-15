@@ -109,10 +109,10 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
         return;
       }
       const evalRes = evaluateFormula(clean, mockGrid);
-      if (evalRes.isValid && evalRes.calculatedValue !== null) {
-        setSimResult(String(evalRes.calculatedValue));
+      if (evalRes.success && evalRes.value !== undefined) {
+        setSimResult(String(evalRes.value));
       } else {
-        setSimResult(evalRes.errorMessage || 'Erro de Sintaxe');
+        setSimResult(evalRes.error || 'Erro de Sintaxe');
       }
     } catch (e: any) {
       setSimResult(e?.message || 'Erro de Avaliação');
