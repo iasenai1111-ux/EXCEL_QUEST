@@ -22,7 +22,11 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
   attemptsCount,
   onIncrementAttempt
 }) => {
-  const targetCellKey = stage.challenge.targetCell;
+  const questions = stage.challenge.questions?.length ? stage.challenge.questions : null;
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const question = questions?.[questionIndex];
+  const activeChallenge = question ? { ...stage.challenge, ...question } : stage.challenge;
+  const targetCellKey = activeChallenge.targetCell;
   const [selectedCell, setSelectedCell] = useState<string>(targetCellKey);
   const [formulaInput, setFormulaInput] = useState<string>('');
   const [currentGridCells, setCurrentGridCells] = useState<Record<string, CellData>>({});
@@ -39,6 +43,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
   // Initialize or reset cells when stage opens
   useEffect(() => {
     if (isOpen) {
+      setQuestionIndex(0);
       setCurrentGridCells({ ...stage.grid.cells });
       setSelectedCell(stage.challenge.targetCell);
       setFormulaInput('');
@@ -126,7 +131,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
       return;
     }
 
-    const validation = validateStageChallenge(formulaInput, stage);
+    const validation = validateStageChallenge(formulaInput, stage, question, currentGridCells);
 
     if (validation.isValid && validation.calculatedValue !== undefined) {
       soundManager.playSuccess();
@@ -148,14 +153,28 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
       }));
 
       setCalculatedResult(validation.calculatedValue);
-      setIsCompleted(true);
+      const finalQuestion = !questions || questionIndex + 1 >= questions.length;
+      setIsCompleted(finalQuestion);
       setFeedback({
         type: 'success',
         message: validation.message
       });
 
-      // Notify parent
-      onSuccess(stage.id, formulaInput, validation.calculatedValue);
+      // Só concluir a fase quando TODAS as questões forem respondidas.
+      if (finalQuestion) {
+        onSuccess(stage.id, formulaInput, validation.calculatedValue);
+      } else {
+        setFeedback({ type: 'success', message: `Questão ${questionIndex + 1} de ${questions.length} correta! Próxima questão...` });
+        setTimeout(() => {
+          setQuestionIndex(index => index + 1);
+          setFormulaInput('');
+          setCalculatedResult(null);
+          setFeedback({ type: 'idle', message: '' });
+          const next = questions[questionIndex + 1];
+          if (next) setSelectedCell(next.targetCell);
+          inputRef.current?.focus();
+        }, 650);
+      }
     } else {
       soundManager.playError();
       onIncrementAttempt(stage.id);
@@ -211,7 +230,8 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-emerald-100 opacity-90 hidden sm:block">
-                {stage.challenge.instruction}
+                {questions && <strong className="block mb-1 text-amber-300">Questão {questionIndex + 1} de {questions.length}</strong>}
+                {activeChallenge.instruction}
               </p>
             </div>
           </div>
@@ -241,10 +261,10 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
               <span className="font-bold text-emerald-400">Como funciona:</span>
               <span>1. Clique na célula amarela (<strong>{targetCellKey}</strong>).</span>
               <span>2. Clique em <strong>=</strong> ou digite com o teclado.</span>
-              <span>3. Clique nas células de dados (ex: <strong>{stage.challenge.requiredCells.join(', ')}</strong>) ou digite seus nomes.</span>
+              <span>3. Clique nas células de dados (ex: <strong>{activeChallenge.requiredCells.join(', ')}</strong>) ou digite seus nomes.</span>
               <span>4. Use operadores como <strong>+</strong>, <strong>-</strong>, <strong>*</strong> ou funções como <strong>SOMA()</strong>, <strong>MÉDIA()</strong>.</span>
             </div>
-            <span className="text-emerald-300 font-mono">Fórmulas aceitas: {stage.challenge.acceptedFormulasDescription}</span>
+            <span className="text-emerald-300 font-mono">Fórmulas aceitas: {activeChallenge.acceptedFormulasDescription}</span>
           </div>
         )}
 
@@ -270,7 +290,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
               aria-label="Barra de fórmulas do Excel"
               onKeyDown={handleKeyDown}
               disabled={isCompleted}
-              placeholder={`Digite a fórmula para ${targetCellKey} (ex: ${stage.challenge.acceptedFormulasDescription.split(' ')[0]})...`}
+              placeholder={`Digite a fórmula para ${targetCellKey} (ex: ${activeChallenge.acceptedFormulasDescription.split(' ')[0]})...`}
               className="w-full pl-3 pr-24 py-1.5 bg-[#080d1a] border-2 border-emerald-500/60 focus:border-emerald-400 rounded-lg text-emerald-200 font-mono text-sm tracking-wider focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition shadow-inner"
             />
             {previewVal !== null && (
@@ -425,7 +445,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
                       const cell = currentGridCells[coord] || { value: '', type: 'label' };
                       const isSelected = selectedCell === coord;
                       const isTarget = coord === targetCellKey;
-                      const isRelevantCell = isCellHighlighted && stage.challenge.requiredCells.includes(coord);
+                      const isRelevantCell = isCellHighlighted && activeChallenge.requiredCells.includes(coord);
 
                       let cellBg = 'bg-[#0f1b36] hover:bg-[#152345]';
                       let textColor = 'text-slate-200';
@@ -512,7 +532,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
                 {attemptsCount === 2 && 'Dica de Células: '}
                 {attemptsCount >= 3 && 'Exemplo Guiado: '}
               </span>
-              <span>{stage.challenge.hints[currentHintIndex]}</span>
+              <span>{activeChallenge.hints[currentHintIndex]}</span>
             </div>
           </div>
         )}
@@ -549,7 +569,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
             <span>•</span>
             <span>Célula Alvo: <strong className="text-amber-400">{targetCellKey}</strong></span>
             <span>•</span>
-            <span>Resultado Esperado: <strong className="text-emerald-400">{stage.challenge.expectedValue}</strong></span>
+            <span>Resultado Esperado: <strong className="text-emerald-400">{activeChallenge.expectedValue}</strong></span>
           </div>
 
           <div className="flex items-center gap-2">
