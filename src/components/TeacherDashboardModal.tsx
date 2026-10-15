@@ -1040,7 +1040,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-mono text-[11px] text-slate-300">
-              Professor Root: <strong>Autorizado</strong> ([removido])
+              Painel docente: <strong>Modo demonstração</strong>
             </span>
           </div>
           <button
