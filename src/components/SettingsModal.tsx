@@ -81,10 +81,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     return () => unsubscribe();
   }, [isOpen]);
 
+  // Closing the modal must unmount the YouTube iframe, stopping playback.
+  const closeSettings = () => {
+    setYoutubeVideoId('');
+    setYoutubeError('');
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!isOpen) setYoutubeVideoId('');
+  }, [isOpen]);
+
   // Handle ESC key to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
+        setYoutubeVideoId('');
         onClose();
       }
     };
@@ -160,13 +172,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#101B35]/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-7 text-white">
+      <div className="relative w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-contain bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl p-5 sm:p-7 text-white">
         
         {/* Ambient Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-32 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Modal Header */}
-        <div className="relative flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="sticky top-0 z-20 -mx-2 px-2 py-3 flex items-center justify-between border-b border-slate-800 bg-[#101B35]/95 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center text-cyan-300 shadow-lg">
               <Sliders className="w-5 h-5" />
@@ -184,10 +196,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           <button
             onClick={() => {
               soundManager.playClick();
-              onClose();
+              closeSettings();
             }}
             className="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition"
-            title="Fechar Configurações"
+            title="Voltar ao jogo"
+            aria-label="Voltar ao jogo"
           >
             <X className="w-5 h-5" />
           </button>
@@ -583,7 +596,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             }}
             className="px-5 py-2.5 btn-game btn-game-play text-xs"
           >
-            Salvar & Fechar
+            Salvar e voltar ao jogo
           </button>
         </div>
 
