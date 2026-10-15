@@ -50,16 +50,16 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-rose-300 block mb-1">
-                Fases bloqueadas automaticamente:
+                Tente novamente nesta fase:
               </span>
               <p className="text-slate-300 leading-relaxed">
-                Ao perder todas as vidas na <strong className="text-white">Fase {stageNumber}</strong>, o sistema bloqueou as fases seguintes e reiniciou seu progresso de volta para a <strong className="text-amber-300">Fase 1</strong>.
+                Você perdeu as vidas na <strong className="text-white">Fase {stageNumber}</strong>. Ao tentar novamente, o personagem volta ao começo dessa fase. As fórmulas já resolvidas, XP e fases liberadas permanecem salvos.
               </p>
             </div>
           </div>
           <div className="pt-2 border-t border-rose-900/50 flex items-center gap-2 text-[11px] text-slate-400">
             <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Suas 3 vidas serão restauradas para você tentar novamente do começo com foco total!</span>
+            <span>Suas 3 vidas serão restauradas para tentar novamente esta fase.</span>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             className="w-full sm:w-auto flex-1 px-6 py-3.5 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold rounded-xl shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition active:scale-95 text-sm"
           >
             <RotateCcw className="w-5 h-5" />
-            <span>Reiniciar na Fase 1</span>
+            <span>Tentar esta fase novamente</span>
           </button>
 
           <button
