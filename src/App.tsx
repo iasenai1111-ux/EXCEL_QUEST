@@ -275,10 +275,10 @@ export default function App() {
             profile={profile}
           />
         ) : (
-          <div className="w-full max-w-6xl px-3 sm:px-6 py-4 flex flex-col items-center">
+          <div className="w-full max-w-6xl px-2 sm:px-6 py-3 sm:py-4 flex flex-col items-center min-w-0">
             
             {/* Stage Navigation / Breadcrumbs Bar */}
-            <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-3 p-3.5 bg-[#172747] rounded-2xl border border-[#334E77] shadow-lg">
+            <div className="w-full flex flex-wrap items-center justify-between gap-2 mb-3 p-2.5 sm:p-3.5 bg-[#172747] rounded-2xl border border-[#334E77] shadow-lg">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
@@ -293,8 +293,8 @@ export default function App() {
 
                 <div className="h-5 w-px bg-[#334E77] mx-1 hidden sm:block" />
 
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-[#F8FAFC] text-sm sm:text-base font-mono">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-extrabold text-[#F8FAFC] text-xs sm:text-base font-mono break-words">
                     {currentStage.title}
                   </span>
                   <span className="text-xs text-[#22D3EE] font-mono hidden md:inline">
@@ -304,7 +304,7 @@ export default function App() {
               </div>
 
               {/* Action shortcuts */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <button
                   onClick={() => {
                     soundManager.playTerminalOpen();
@@ -384,9 +384,9 @@ export default function App() {
             />
 
             {/* Quick Pedagogical Mission Brief Box below canvas */}
-            <div className="w-full mt-4 p-4 bg-[#172747] border border-[#334E77] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+            <div className="w-full mt-3 sm:mt-4 p-3 sm:p-4 bg-[#172747] border border-[#334E77] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-start gap-2">
                   <span className="text-[11px] font-mono uppercase tracking-wider text-[#22D3EE] font-bold">
                     Missão Atual:
                   </span>
