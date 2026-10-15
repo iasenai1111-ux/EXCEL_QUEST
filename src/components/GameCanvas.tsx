@@ -46,6 +46,20 @@ interface Particle {
   size: number;
 }
 
+interface FlyingEnemy {
+  id: number;
+  x: number;
+  y: number;
+  baseY: number;
+  minX: number;
+  maxX: number;
+  vx: number;
+  alive: boolean;
+  phase: number;
+  w: number;
+  h: number;
+}
+
 interface FloatingCoin {
   id: number;
   x: number;
@@ -115,6 +129,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   // Level entities refs
   const blocksRef = useRef<QuestionBlock[]>([]);
   const enemiesRef = useRef<EnemyBot[]>([]);
+  const flyingEnemiesRef = useRef<FlyingEnemy[]>([]);
   const pipesRef = useRef<Pipe[]>([]);
   const groundSegmentsRef = useRef<{ x: number; w: number }[]>([]);
   const floatingCoinsRef = useRef<FloatingCoin[]>([]);
@@ -183,6 +198,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       { id: 5, x: 2040, y: GROUND_Y - 30, w: 30, h: 30, vx: -1.8, isAlive: true, squashTimer: 0, patrolMinX: 2000, patrolMaxX: 2140, name: 'Guardião' }
     ];
 
+    flyingEnemiesRef.current = [
+      { id: 1, x: 620, y: 255, baseY: 255, minX: 510, maxX: 650, vx: -1.25, alive: true, phase: 0, w: 34, h: 26 },
+      { id: 2, x: 1320, y: 265, baseY: 265, minX: 1190, maxX: 1380, vx: 1.5, alive: true, phase: 2, w: 34, h: 26 },
+      { id: 3, x: 1950, y: 245, baseY: 245, minX: 1900, maxX: 2100, vx: -1.8, alive: true, phase: 4, w: 34, h: 26 }
+    ];
     floatingCoinsRef.current = [];
     particlesRef.current = [];
   }, [stage.id]);
@@ -533,6 +553,37 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           }
         });
 
+        // Aerial enemies: patrol high above ground and dive toward a nearby hero.
+        flyingEnemiesRef.current.forEach(bird => {
+          if (!bird.alive) return;
+          const near = Math.abs((p.x + p.w / 2) - (bird.x + bird.w / 2)) < 210;
+          const direction = near ? Math.sign(p.x - bird.x) : Math.sign(bird.vx);
+          const speed = 1.25 + bird.id * 0.2;
+          bird.vx = (direction || 1) * (near ? speed * 1.35 : speed);
+          bird.x = Math.max(bird.minX, Math.min(bird.maxX, bird.x + bird.vx));
+          if (bird.x <= bird.minX) bird.vx = speed;
+          if (bird.x >= bird.maxX) bird.vx = -speed;
+          bird.phase += 0.065;
+          const dive = near ? Math.max(0, 65 - Math.abs(p.x - bird.x) * 0.22) : 0;
+          bird.y = bird.baseY + Math.sin(bird.phase) * 20 + dive;
+          if (checkStompEnemy(p, { ...bird, isAlive: true, squashTimer: 0, patrolMinX: bird.minX, patrolMaxX: bird.maxX, name: 'BugVoador' })) {
+            bird.alive = false;
+            p.vy = -9;
+            soundManager.playStomp();
+            setDefeatedEnemies(value => value + 1);
+            addParticles(bird.x, bird.y, '#a78bfa', 14);
+          } else if (checkAABBCollision(p, bird) && p.invulnerableTimer === 0) {
+            if (isGodMode) {
+              bird.alive = false;
+              addParticles(bird.x, bird.y, '#facc15', 16);
+            } else {
+              p.invulnerableTimer = 90;
+              addParticles(p.x, p.y, '#f87171', 10);
+              handleLifeLoss();
+            }
+          }
+        });
+
         // --- 7. FLAGPOLE TOUCH (MARIO LEVEL CLEAR) ---
         if (p.x + p.w >= flagpolePos.x && p.x <= flagpolePos.x + flagpolePos.w + 10) {
           p.isClimbingFlag = true;
@@ -593,6 +644,26 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
       // Enemies
       enemiesRef.current.forEach(enemy => drawEnemy(ctx, enemy, tick));
+
+      // Flying enemies rendered in the same world coordinate system as ground enemies.
+      flyingEnemiesRef.current.forEach(bird => {
+        if (!bird.alive) return;
+        ctx.save();
+        ctx.translate(bird.x + bird.w / 2, bird.y + bird.h / 2);
+        const flap = Math.sin(tick * 0.3 + bird.phase) * 8;
+        ctx.fillStyle = '#a78bfa';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 15, 11, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#818cf8';
+        ctx.beginPath();
+        ctx.moveTo(-9, 0); ctx.lineTo(-26, -7 + flap); ctx.lineTo(-14, 8); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(9, 0); ctx.lineTo(26, -7 + flap); ctx.lineTo(14, 8); ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-7, -3, 5, 5); ctx.fillRect(4, -3, 5, 5);
+        ctx.restore();
+      });
 
       // Player
       if (p.invulnerableTimer === 0 || Math.floor(tick / 4) % 2 === 0) {
