@@ -51,18 +51,58 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <span>SENAI • EDUCAÇÃO PROFISSIONAL & TECNOLÓGICA</span>
         </div>
 
-        {/* Game Title */}
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 drop-shadow-md">
-          EXCEL QUEST
-        </h1>
+        {/* Super Mario Style Title Banner */}
+        <div className="flex flex-col items-center mb-2">
+          
+          {/* SUPER Blocky Colorful 3D Mario-style Letters */}
+          <div className="flex items-center gap-1 sm:gap-1.5 mb-2 scale-90 sm:scale-100">
+            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-yellow-200 bg-red-600 rounded-lg border-2 border-red-900 shadow-[0_3px_0_#7f1d1d] font-mono text-base sm:text-lg">
+              S
+            </span>
+            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-yellow-200 bg-blue-600 rounded-lg border-2 border-blue-900 shadow-[0_3px_0_#1e3a8a] font-mono text-base sm:text-lg">
+              U
+            </span>
+            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-white bg-amber-500 rounded-lg border-2 border-amber-800 shadow-[0_3px_0_#78350f] font-mono text-base sm:text-lg">
+              P
+            </span>
+            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-yellow-200 bg-emerald-600 rounded-lg border-2 border-emerald-900 shadow-[0_3px_0_#064e3b] font-mono text-base sm:text-lg">
+              E
+            </span>
+            <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-white bg-red-600 rounded-lg border-2 border-red-900 shadow-[0_3px_0_#7f1d1d] font-mono text-base sm:text-lg">
+              R
+            </span>
+            <div className="ml-2 px-2.5 py-1 bg-gradient-to-r from-red-600 via-blue-600 to-emerald-600 rounded-xl border border-white/30 shadow-[0_3px_0_#0f172a] flex items-center gap-1.5">
+              <span className="text-xs sm:text-sm font-black text-white tracking-widest font-mono">
+                SENAI BROS.
+              </span>
+            </div>
+          </div>
 
-        {/* Subtitle */}
-        <p className="text-base sm:text-xl font-bold text-amber-400 mt-2 tracking-wide font-sans">
-          A Aventura das Fórmulas
-        </p>
+          {/* Main Logo: EXCEL WORLD */}
+          <div className="relative">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-amber-400 to-yellow-600 drop-shadow-[0_4px_0_#78350f] font-mono uppercase">
+              EXCEL WORLD
+            </h1>
+            <div className="absolute -top-2.5 -right-4 sm:-right-8 rotate-12">
+              <span className="text-[10px] sm:text-xs font-black bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full border-2 border-white shadow-md flex items-center gap-1 animate-bounce">
+                ⭐ FÓRMULAS!
+              </span>
+            </div>
+          </div>
+
+          {/* Subtitle with Mario Mario / SENAI elements */}
+          <div className="mt-2.5 inline-flex items-center gap-2 px-3 py-1 bg-slate-900/90 border border-amber-500/40 rounded-full shadow-lg">
+            <span className="text-amber-400 text-sm">🍄</span>
+            <p className="text-xs sm:text-sm font-bold text-amber-200 tracking-wide font-sans">
+              A Grande Odisséia das Planilhas • SENAI-SP
+            </p>
+            <span className="text-yellow-400 text-sm">⭐</span>
+          </div>
+
+        </div>
 
         <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-lg leading-relaxed">
-          O primeiro videogame interativo que ensina planilhas na prática: explore mundos 2D, decifre terminais com fórmulas reais e domine o Microsoft Excel!
+          O primeiro videogame estilo retrô plataforma que ensina planilhas na prática: explore mundos 2D, salte em blocos [?], decifre fórmulas reais e domine o Microsoft Excel!
         </p>
 
         {/* Student Credential Pill */}

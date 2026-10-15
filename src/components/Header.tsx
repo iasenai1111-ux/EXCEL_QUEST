@@ -34,10 +34,12 @@ export const Header: React.FC<HeaderProps> = ({
   isInGame
 }) => {
   const [isMuted, setIsMuted] = useState(soundManager.getMuted());
+  const [bgmMode, setBgmMode] = useState(soundManager.getBgmMode());
 
   React.useEffect(() => {
     const unsub = soundManager.subscribe(() => {
       setIsMuted(soundManager.getMuted());
+      setBgmMode(soundManager.getBgmMode());
     });
     return () => unsub();
   }, []);
@@ -45,6 +47,12 @@ export const Header: React.FC<HeaderProps> = ({
   const handleToggleMute = () => {
     const next = soundManager.toggleMute();
     setIsMuted(next);
+  };
+
+  const handleToggleBgmMode = () => {
+    const nextMode = bgmMode === 'bit' ? 'original' : 'bit';
+    soundManager.setBgmMode(nextMode);
+    soundManager.playClick();
   };
 
   // Compute Rank Title based on XP
@@ -61,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="w-full bg-[#0d162d]/95 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-40 px-3 sm:px-6 py-2.5 transition">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         
-        {/* Left Brand & Home */}
+        {/* Left: Super Mario Style Logo + Home Button */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
@@ -71,20 +79,20 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-2 group text-left"
             title="Voltar à Tela Inicial"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#107c41] to-[#0a522a] border border-emerald-400/50 flex items-center justify-center font-black text-white text-base shadow-lg group-hover:scale-105 transition">
-              X
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 via-amber-500 to-emerald-600 border-2 border-yellow-300 flex items-center justify-center font-black text-white text-base shadow-[0_2px_0_#7f1d1d] group-hover:scale-105 transition font-mono">
+              S
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-white text-sm sm:text-base tracking-wide group-hover:text-emerald-400 transition">
-                  EXCEL QUEST
+                <span className="font-black text-yellow-300 text-xs sm:text-sm tracking-wider font-mono drop-shadow-[0_1px_0_#78350f] group-hover:text-yellow-200 transition uppercase">
+                  SUPER SENAI BROS
                 </span>
-                <span className="text-[10px] bg-cyan-950 text-cyan-300 px-1.5 py-0.2 rounded border border-cyan-500/40 font-mono hidden sm:inline">
-                  SENAI
+                <span className="text-[9px] bg-red-950 text-red-300 px-1 py-0.2 rounded border border-red-500/40 font-mono hidden sm:inline font-bold">
+                  EXCEL
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 block -mt-0.5">
-                A Aventura das Fórmulas
+              <span className="text-[10px] text-emerald-400 block font-mono font-bold tracking-tight">
+                EXCEL WORLD • FÓRMULAS
               </span>
             </div>
           </button>
@@ -195,6 +203,24 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Controle de Som"
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+          </button>
+
+          {/* Quick Music Mode Selector: 8-Bit vs Original Rock */}
+          <button
+            onClick={handleToggleBgmMode}
+            className={`px-2 py-1 rounded-xl text-[11px] font-mono font-bold flex items-center gap-1 border transition active:scale-95 ${
+              bgmMode === 'original'
+                ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 hover:bg-amber-900/80'
+                : 'bg-emerald-950/80 border-emerald-500/60 text-emerald-300 hover:bg-emerald-900/80'
+            }`}
+            title={`Trilha Carry on Wayward Son: ${
+              bgmMode === 'original' ? 'Versão Original (Rock Studio)' : 'Versão 8-Bit (Arcade Retro)'
+            } • Clique para alternar`}
+          >
+            <span>{bgmMode === 'original' ? '🎸' : '👾'}</span>
+            <span className="hidden sm:inline font-sans text-[10px]">
+              {bgmMode === 'original' ? 'Original' : '8-Bit'}
+            </span>
           </button>
 
           {/* Settings Modal Button */}

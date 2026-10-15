@@ -32,6 +32,8 @@ interface GameCanvasProps {
   onGameOver: () => void;
   isGodMode?: boolean;
   onOpenSettings?: () => void;
+  onShowEnding?: () => void;
+  onOpenTeacherDashboard?: () => void;
 }
 
 interface Particle {
@@ -68,6 +70,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onGameOver,
   isGodMode = false,
   onOpenSettings,
+  onShowEnding,
+  onOpenTeacherDashboard,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -385,7 +389,17 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
         // Pit Fall Check
         if (p.y > VIEW_HEIGHT + 40) {
-          handleLifeLoss();
+          if (isGodMode) {
+            // Professor Root Superuser: anti-gravity rocket leap back onto the ground!
+            p.x = checkpointX;
+            p.y = GROUND_Y - p.h - 10;
+            p.vy = -11;
+            p.isGrounded = false;
+            addParticles(p.x + p.w / 2, p.y + p.h, '#fbbf24', 24);
+            soundManager.playPowerUp();
+          } else {
+            handleLifeLoss();
+          }
         }
 
         // Pipes collision
@@ -487,11 +501,22 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
           // Check side/bottom damage
           if (checkAABBCollision(p, enemy) && p.invulnerableTimer === 0) {
-            p.invulnerableTimer = 90;
-            p.vy = -6;
-            p.vx = p.x < enemy.x ? -6 : 6;
-            addParticles(p.x + p.w / 2, p.y + p.h / 2, '#ef4444', 8);
-            handleLifeLoss();
+            if (isGodMode) {
+              // Root Superuser: defeats enemy on contact with golden burst!
+              enemy.isAlive = false;
+              enemy.squashTimer = 40;
+              p.vy = -7.5;
+              soundManager.playStomp();
+              setDefeatedEnemies(prev => prev + 1);
+              onCoinCollected();
+              addParticles(enemy.x + enemy.w / 2, enemy.y + enemy.h / 2, '#fbbf24', 20);
+            } else {
+              p.invulnerableTimer = 90;
+              p.vy = -6;
+              p.vx = p.x < enemy.x ? -6 : 6;
+              addParticles(p.x + p.w / 2, p.y + p.h / 2, '#ef4444', 8);
+              handleLifeLoss();
+            }
           }
         });
 

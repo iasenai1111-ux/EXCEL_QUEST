@@ -24,13 +24,13 @@ const TRAILER_SCENES: TrailerScene[] = [
   {
     id: 1,
     tagline: 'O DESAFIO COMEÇA NO SENAI',
-    title: 'EXCEL QUEST: A Aventura das Fórmulas',
-    subtitle: 'Um videogame de verdade para dominar planilhas!',
+    title: 'SUPER SENAI BROS: EXCEL WORLD',
+    subtitle: 'Um videogame Super Mario style para dominar planilhas!',
     description: 'No laboratório do SENAI, o banco de dados industrial foi desconfigurado. O SENAIZINHO foi convocado para uma missão épica de exploração e cálculos automatizados!',
     icon: '⚡',
     badge: 'MISSÃO SENAI',
     gradient: 'from-blue-900 via-indigo-950 to-slate-950',
-    features: ['Gráficos 2D retrô', 'Personagem SENAIZINHO original', 'Trilha sonora 8-bit Carry on Wayward Son']
+    features: ['Gráficos 2D retrô', 'Personagem SENAIZINHO original', 'Trilha sonora Carry on Wayward Son (8-Bit & Original)']
   },
   {
     id: 2,
@@ -128,7 +128,7 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
           <div className="flex items-center gap-2">
             <Film className="w-5 h-5 text-yellow-300 animate-pulse" />
             <span className="font-mono text-xs sm:text-sm font-black tracking-widest uppercase">
-              TRAILER OFICIAL • EXCEL QUEST 2.1
+              TRAILER OFICIAL • SUPER SENAI BROS: EXCEL WORLD
             </span>
           </div>
 
@@ -272,7 +272,7 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
               className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95"
             >
               <Play className="w-4 h-4 fill-white" />
-              <span>JOGAR O EXCEL QUEST AGORA</span>
+              <span>JOGAR O SUPER SENAI BROS AGORA</span>
             </button>
           </div>
         </div>

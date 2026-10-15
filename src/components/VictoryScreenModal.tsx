@@ -179,7 +179,7 @@ export const VictoryScreenModal: React.FC<VictoryScreenModalProps> = ({
             </div>
 
             <p className="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-2xl mx-auto">
-              Superou todos os 10 mundos e desafios matemáticos do <strong className="text-white">EXCEL QUEST 2.1</strong>, demonstrando destreza completa em planilhas digitais, raciocínio lógico e automação de fórmulas no Microsoft Excel.
+              Superou todos os 10 mundos e desafios matemáticos do <strong className="text-yellow-300">SUPER SENAI BROS: EXCEL WORLD</strong>, demonstrando destreza completa em planilhas digitais, raciocínio lógico e automação de fórmulas no Microsoft Excel.
             </p>
 
             <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2">

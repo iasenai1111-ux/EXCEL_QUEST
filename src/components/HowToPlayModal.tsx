@@ -21,10 +21,10 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
               <HelpCircle className="w-6 h-6 text-cyan-400" />
             </div>
             <div>
-              <span className="text-[10px] font-mono tracking-widest uppercase text-cyan-300">
-                Manual do Aventureiro SENAI
+              <span className="text-[10px] font-mono tracking-widest uppercase text-yellow-300 font-bold">
+                Manual do Aventureiro SENAI • Super Mario Style
               </span>
-              <h2 className="text-lg font-bold">Como Jogar EXCEL QUEST</h2>
+              <h2 className="text-lg font-black text-white tracking-wide">Como Jogar SUPER SENAI BROS: EXCEL WORLD</h2>
             </div>
           </div>
           <button

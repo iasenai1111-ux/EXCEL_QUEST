@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { soundManager } from '../utils/audio';
 import {
   Settings,
@@ -14,7 +14,11 @@ import {
   Play,
   Pause,
   Disc3,
-  Award
+  Award,
+  Radio,
+  Upload,
+  Headphones,
+  ExternalLink
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -30,6 +34,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [bgmEnabled, setBgmEnabled] = useState<boolean>(soundManager.isBGMEnabled());
   const [sfxEnabled, setSfxEnabled] = useState<boolean>(soundManager.isSFXEnabled());
   const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(soundManager.isBGMPlaying());
+  const [bgmMode, setBgmMode] = useState<'bit' | 'original'>(soundManager.getBgmMode());
+  const [customAudioName, setCustomAudioName] = useState<string>(soundManager.getCustomAudioName());
+  const [streamUrlInput, setStreamUrlInput] = useState<string>('');
+  const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Subscribe to changes in soundManager
   useEffect(() => {
@@ -41,6 +51,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       setBgmEnabled(soundManager.isBGMEnabled());
       setSfxEnabled(soundManager.isSFXEnabled());
       setIsBgmPlaying(soundManager.isBGMPlaying());
+      setBgmMode(soundManager.getBgmMode());
+      setCustomAudioName(soundManager.getCustomAudioName());
     };
 
     const unsubscribe = soundManager.subscribe(syncState);
@@ -143,7 +155,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 <span>CONFIGURAÇÕES DE ÁUDIO</span>
               </h2>
               <span className="text-[11px] text-cyan-300 font-mono block">
-                EXCEL QUEST • SENAIZINHO
+                SUPER SENAI BROS • EXCEL WORLD
               </span>
             </div>
           </div>
@@ -183,7 +195,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 Carry on Wayward Son
               </strong>
               <span className="text-[11px] text-slate-300 block">
-                Kansas (Arranjo 8-Bit Chiptune em Loop)
+                {bgmMode === 'original'
+                  ? 'Kansas (Versão Original Rock Studio • Sem ser Bit)'
+                  : 'Kansas (Arranjo 8-Bit Chiptune Arcade)'}
               </span>
             </div>
           </div>
@@ -209,6 +223,142 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </>
             )}
           </button>
+        </div>
+
+        {/* Music Style Selector: 8-Bit Chiptune vs Original Kansas Rock */}
+        <div className="mt-3 p-3.5 bg-slate-900/90 border border-amber-500/30 rounded-2xl shadow-md">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <Radio className="w-4 h-4 text-amber-400" />
+              <span>Estilo da Música "Carry on Wayward Son":</span>
+            </span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded border font-bold ${
+              bgmMode === 'original'
+                ? 'bg-amber-950 text-amber-300 border-amber-500/50'
+                : 'bg-emerald-950 text-emerald-300 border-emerald-500/50'
+            }`}>
+              {bgmMode === 'original' ? '🎸 Versão Original' : '👾 8-Bit Arcade'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {/* Option 1: 8-Bit Chiptune */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.setBgmMode('bit');
+                soundManager.playClick();
+              }}
+              className={`p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 border transition active:scale-95 text-center ${
+                bgmMode === 'bit'
+                  ? 'bg-gradient-to-b from-emerald-900/60 to-emerald-950/80 border-emerald-400 text-emerald-200 ring-2 ring-emerald-400/30 shadow-lg'
+                  : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-300'
+              }`}
+            >
+              <span className="text-xl">👾</span>
+              <span className="font-extrabold text-xs">8-Bit Chiptune</span>
+              <span className="text-[10px] text-slate-400 font-normal">Sons Arcade Retrô</span>
+            </button>
+
+            {/* Option 2: Original Kansas Rock (Sem ser bit) */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.setBgmMode('original');
+                soundManager.playClick();
+              }}
+              className={`p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 border transition active:scale-95 text-center ${
+                bgmMode === 'original'
+                  ? 'bg-gradient-to-b from-amber-900/60 to-amber-950/80 border-amber-400 text-amber-200 ring-2 ring-amber-400/30 shadow-lg'
+                  : 'bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-300'
+              }`}
+            >
+              <span className="text-xl">🎸</span>
+              <span className="font-extrabold text-xs">Versão Original</span>
+              <span className="text-[10px] text-amber-300/80 font-normal">Rock Studio (Sem ser bit)</span>
+            </button>
+          </div>
+
+          {/* Controls when Original Version is active */}
+          {bgmMode === 'original' && (
+            <div className="mt-3 pt-3 border-t border-slate-800/80 space-y-2.5">
+              <div className="flex items-center justify-between text-[11px] text-slate-300">
+                <span className="flex items-center gap-1">
+                  <Headphones className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Fonte do Áudio Original:</span>
+                </span>
+                <span className="font-mono text-amber-300 font-bold truncate max-w-[200px]">
+                  {customAudioName ? `📂 ${customAudioName}` : '⚡ Studio Rock Synthesizer'}
+                </span>
+              </div>
+
+              {/* Upload custom MP3 or paste URL */}
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="audio/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      soundManager.loadCustomOriginalAudio(file);
+                      soundManager.playSuccess();
+                    }
+                  }}
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 min-w-[150px] px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-1.5 transition active:scale-95"
+                  title="Carregar arquivo MP3 da música Carry on Wayward Son do computador ou pendrive"
+                >
+                  <Upload className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Carregar MP3 do Computador</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowUrlInput(!showUrlInput)}
+                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition active:scale-95"
+                  title="Informar link direto de streaming de áudio"
+                >
+                  <Radio className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Inserir Link de Áudio</span>
+                </button>
+              </div>
+
+              {showUrlInput && (
+                <div className="flex gap-2 pt-1">
+                  <input
+                    type="url"
+                    value={streamUrlInput}
+                    onChange={(e) => setStreamUrlInput(e.target.value)}
+                    placeholder="https://.../carry_on_wayward_son.mp3"
+                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (streamUrlInput.trim()) {
+                        soundManager.setOriginalAudioUrl(streamUrlInput.trim());
+                        setShowUrlInput(false);
+                        soundManager.playSuccess();
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition"
+                  >
+                    Tocar
+                  </button>
+                </div>
+              )}
+
+              <p className="text-[10px] text-slate-400 leading-tight">
+                💡 Dica: No laboratório, você pode selecionar qualquer arquivo MP3 da música Kansas - Carry on Wayward Son ou ouvir o arranjo de estúdio em alta definição com guitarras e bateria de rock real!
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Audio Sliders List */}

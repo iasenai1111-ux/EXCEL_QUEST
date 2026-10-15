@@ -18,6 +18,9 @@ class SoundManager {
   private sfxVolume: number = 0.85;
   private bgmEnabled: boolean = true;
   private sfxEnabled: boolean = true;
+  private bgmMode: 'bit' | 'original' = 'bit';
+  private originalAudio: HTMLAudioElement | null = null;
+  private customAudioName: string = '';
 
   // BGM playback state
   private bgmPlaying: boolean = false;
@@ -45,6 +48,11 @@ class SoundManager {
 
       const savedSfxEnabled = localStorage.getItem('excel_quest_sfx_enabled');
       if (savedSfxEnabled !== null) this.sfxEnabled = savedSfxEnabled === 'true';
+
+      const savedMode = localStorage.getItem('excel_quest_bgm_mode');
+      if (savedMode === 'original' || savedMode === 'bit') {
+        this.bgmMode = savedMode;
+      }
     }
 
     // Attach user gesture listener for browser autoplay policy
@@ -210,6 +218,10 @@ class SoundManager {
         const targetSfx = this.sfxEnabled ? this.sfxVolume : 0;
         this.sfxGain.gain.cancelScheduledValues(now);
         this.sfxGain.gain.setTargetAtTime(targetSfx, now, 0.05);
+      }
+      if (this.originalAudio) {
+        const effectiveVol = (this.isMuted || !this.bgmEnabled) ? 0 : (this.masterVolume * this.bgmVolume);
+        this.originalAudio.volume = Math.max(0, Math.min(1, effectiveVol));
       }
     } catch {}
   }
@@ -521,10 +533,69 @@ class SoundManager {
     } catch {}
   }
 
-  // --- 8-BIT CHIPTUNE BGM: "CARRY ON WAYWARD SON" (KANSAS) ---
+  // --- BGM ENGINE: 8-BIT CHIPTUNE vs ORIGINAL STUDIO ROCK ---
 
   public isBGMPlaying(): boolean {
     return this.bgmPlaying;
+  }
+
+  public getBgmMode(): 'bit' | 'original' {
+    return this.bgmMode;
+  }
+
+  public setBgmMode(mode: 'bit' | 'original') {
+    if (this.bgmMode === mode) return;
+    this.bgmMode = mode;
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('excel_quest_bgm_mode', mode);
+      } catch {}
+    }
+    if (this.bgmPlaying) {
+      this.stopBGM();
+      this.startBGM();
+    } else {
+      this.notify();
+    }
+  }
+
+  public getCustomAudioName(): string {
+    return this.customAudioName;
+  }
+
+  public loadCustomOriginalAudio(file: File) {
+    try {
+      const url = URL.createObjectURL(file);
+      this.customAudioName = file.name;
+      if (!this.originalAudio) {
+        this.originalAudio = new Audio();
+        this.originalAudio.loop = true;
+      }
+      this.originalAudio.src = url;
+      this.applyGains();
+      this.setBgmMode('original');
+      if (this.bgmPlaying) {
+        this.originalAudio.play().catch(() => {});
+      }
+      this.notify();
+    } catch {}
+  }
+
+  public setOriginalAudioUrl(url: string, name?: string) {
+    try {
+      this.customAudioName = name || 'Áudio Original (Stream)';
+      if (!this.originalAudio) {
+        this.originalAudio = new Audio();
+        this.originalAudio.loop = true;
+      }
+      this.originalAudio.src = url;
+      this.applyGains();
+      this.setBgmMode('original');
+      if (this.bgmPlaying) {
+        this.originalAudio.play().catch(() => {});
+      }
+      this.notify();
+    } catch {}
   }
 
   public stopBGM() {
@@ -540,6 +611,12 @@ class SoundManager {
       } catch {}
     });
     this.bgmNodes = [];
+
+    if (this.originalAudio) {
+      try {
+        this.originalAudio.pause();
+      } catch {}
+    }
     this.notify();
   }
 
@@ -565,11 +642,15 @@ class SoundManager {
     if (this.isMuted || !this.bgmEnabled) return;
     this.stopBGM();
     this.initCtx();
-    if (!this.ctx) return;
 
     this.bgmPlaying = true;
     this.notify();
-    this.playCarryOnWaywardSonLoop();
+
+    if (this.bgmMode === 'original') {
+      this.playOriginalRockTrack();
+    } else {
+      this.playCarryOnWaywardSonLoop();
+    }
   }
 
   /**
@@ -734,6 +815,243 @@ class SoundManager {
     this.bgmTimer = window.setTimeout(() => {
       if (this.bgmPlaying) {
         this.playCarryOnWaywardSonLoop();
+      }
+    }, Math.max(100, Math.floor(totalDuration * 1000) - 35));
+  }
+
+  private makeDistortionCurve(amount: number = 25): Float32Array {
+    const k = amount;
+    const n = 44100;
+    const curve = new Float32Array(n);
+    const deg = Math.PI / 180;
+    for (let i = 0; i < n; ++i) {
+      const x = (i * 2) / n - 1;
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  private playOriginalRockTrack() {
+    if (!this.bgmPlaying || this.isMuted || !this.bgmEnabled) return;
+
+    if (this.originalAudio && this.originalAudio.src) {
+      this.applyGains();
+      const playPromise = this.originalAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          this.playStudioRockSynthesizerLoop();
+        });
+      }
+      return;
+    }
+
+    this.playStudioRockSynthesizerLoop();
+  }
+
+  /**
+   * High-definition Studio Rock Synthesizer version of Kansas - "Carry on Wayward Son".
+   * Features overdriven electric guitar (WaveShaper overdrive + cabinet filter),
+   * warm Hammond organ harmonies, solid bass guitar, and acoustic rock drums.
+   * Completely distinct from the 8-bit chiptune sound!
+   */
+  private playStudioRockSynthesizerLoop() {
+    if (!this.bgmPlaying || this.isMuted || !this.bgmEnabled || !this.ctx || !this.bgmGain) {
+      this.bgmPlaying = false;
+      this.notify();
+      return;
+    }
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime + 0.05;
+    this.bgmNodes = [];
+
+    // Frequencies (Hz)
+    const D2 = 73.42, F2 = 87.31, G2 = 98.00, A2 = 110.00, C3 = 130.81;
+    const D3 = 146.83, F3 = 174.61, G3 = 196.00, A3 = 220.00, C4 = 261.63, Cs4 = 277.18;
+    const D4 = 293.66, F4 = 349.23, G4 = 392.00, A4 = 440.00;
+    const C5 = 523.25, D5 = 587.33;
+
+    // Kansas - "Carry on Wayward Son" notes
+    const melody: [number, number, number][] = [
+      // Vocal Chorus Section
+      [A4, 0.28, D2],
+      [C5, 0.28, D2],
+      [D5, 0.52, D2],
+      [C5, 0.28, C3],
+      [A4, 0.52, A2],
+
+      [A4, 0.28, D2],
+      [C5, 0.28, D2],
+      [D5, 0.52, D2],
+      [C5, 0.28, C3],
+      [A4, 0.26, A2],
+      [G4, 0.56, G2],
+
+      [A4, 0.28, D2],
+      [C5, 0.28, D2],
+      [D5, 0.52, D2],
+      [C5, 0.28, C3],
+      [A4, 0.26, A2],
+      [G4, 0.26, G2],
+      [F4, 0.26, F2],
+      [D4, 0.56, D2],
+
+      [F4, 0.34, F2],
+      [G4, 0.34, G2],
+      [A4, 0.48, A2],
+      [G4, 0.34, G2],
+      [D4, 0.78, D2],
+
+      // Legendary Hard-Rock Guitar Riff
+      [D4, 0.17, D2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [G4, 0.26, G2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [C4, 0.24, C3], [A3, 0.38, A2],
+
+      [D4, 0.17, D2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [G4, 0.26, G2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [C4, 0.22, C3], [Cs4, 0.22, A2], [D4, 0.52, D2],
+
+      [D4, 0.17, D2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [G4, 0.26, G2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [C4, 0.24, C3], [A3, 0.38, A2],
+
+      [D4, 0.17, D2], [D4, 0.17, D2], [F4, 0.24, F2], [D4, 0.17, D2],
+      [G4, 0.26, G2], [A4, 0.26, A2], [C5, 0.32, C3], [D5, 0.68, D2],
+    ];
+
+    const distortionCurve = this.makeDistortionCurve(28);
+
+    let t = now;
+    melody.forEach(([freq, dur, bassFreq], idx) => {
+      if (!ctx || !this.bgmGain) return;
+
+      // 1. Electric Guitar with Overdrive & Speaker Cabinet Lowpass Filter
+      const guitarOsc = ctx.createOscillator();
+      const waveShaper = ctx.createWaveShaper();
+      const cabFilter = ctx.createBiquadFilter();
+      const guitarGain = ctx.createGain();
+
+      guitarOsc.type = 'sawtooth';
+      guitarOsc.frequency.setValueAtTime(freq, t);
+
+      // Overdrive curve
+      waveShaper.curve = distortionCurve as unknown as Float32Array<ArrayBuffer>;
+      waveShaper.oversample = '4x';
+
+      // Marshall style 4x12 cab lowpass
+      cabFilter.type = 'lowpass';
+      cabFilter.frequency.setValueAtTime(2400, t);
+      cabFilter.Q.setValueAtTime(1.8, t);
+
+      guitarGain.gain.setValueAtTime(0.065, t);
+      guitarGain.gain.exponentialRampToValueAtTime(0.001, t + dur - 0.015);
+
+      guitarOsc.connect(waveShaper);
+      waveShaper.connect(cabFilter);
+      cabFilter.connect(guitarGain);
+      guitarGain.connect(this.bgmGain);
+
+      guitarOsc.start(t);
+      guitarOsc.stop(t + dur);
+
+      // 2. Hammond Organ Pad Warmth (sine harmonics: fundamental + octave)
+      const organOsc1 = ctx.createOscillator();
+      const organOsc2 = ctx.createOscillator();
+      const organGain = ctx.createGain();
+
+      organOsc1.type = 'sine';
+      organOsc1.frequency.setValueAtTime(freq, t);
+      organOsc2.type = 'sine';
+      organOsc2.frequency.setValueAtTime(freq * 0.5, t); // Sub harmonic
+
+      organGain.gain.setValueAtTime(0.035, t);
+      organGain.gain.exponentialRampToValueAtTime(0.001, t + dur - 0.02);
+
+      organOsc1.connect(organGain);
+      organOsc2.connect(organGain);
+      organGain.connect(this.bgmGain);
+
+      organOsc1.start(t);
+      organOsc1.stop(t + dur);
+      organOsc2.start(t);
+      organOsc2.stop(t + dur);
+
+      // 3. Fender Precision Bass (Deep warm low-end)
+      const bassOsc = ctx.createOscillator();
+      const bassFilter = ctx.createBiquadFilter();
+      const bassGain = ctx.createGain();
+
+      bassOsc.type = 'sawtooth';
+      bassOsc.frequency.setValueAtTime(bassFreq, t);
+
+      bassFilter.type = 'lowpass';
+      bassFilter.frequency.setValueAtTime(220, t);
+
+      bassGain.gain.setValueAtTime(0.12, t);
+      bassGain.gain.exponentialRampToValueAtTime(0.001, t + dur - 0.02);
+
+      bassOsc.connect(bassFilter);
+      bassFilter.connect(bassGain);
+      bassGain.connect(this.bgmGain);
+
+      bassOsc.start(t);
+      bassOsc.stop(t + dur);
+
+      // 4. Acoustic Rock Drums
+      // Kick drum on beat 1
+      if (idx % 2 === 0) {
+        try {
+          const kickOsc = ctx.createOscillator();
+          const kickGain = ctx.createGain();
+          kickOsc.type = 'sine';
+          kickOsc.frequency.setValueAtTime(130, t);
+          kickOsc.frequency.exponentialRampToValueAtTime(45, t + 0.08);
+
+          kickGain.gain.setValueAtTime(0.16, t);
+          kickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+
+          kickOsc.connect(kickGain);
+          kickGain.connect(this.bgmGain);
+          kickOsc.start(t);
+          kickOsc.stop(t + 0.12);
+          this.bgmNodes.push({ osc: kickOsc, gain: kickGain });
+        } catch {}
+      }
+
+      // Snare drum on beat 2
+      if (idx % 2 === 1) {
+        try {
+          const snareOsc = ctx.createOscillator();
+          const snareGain = ctx.createGain();
+          snareOsc.type = 'triangle';
+          snareOsc.frequency.setValueAtTime(180, t);
+          snareOsc.frequency.exponentialRampToValueAtTime(80, t + 0.07);
+
+          snareGain.gain.setValueAtTime(0.1, t);
+          snareGain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+
+          snareOsc.connect(snareGain);
+          snareGain.connect(this.bgmGain);
+          snareOsc.start(t);
+          snareOsc.stop(t + 0.1);
+          this.bgmNodes.push({ osc: snareOsc, gain: snareGain });
+        } catch {}
+      }
+
+      this.bgmNodes.push(
+        { osc: guitarOsc, gain: guitarGain },
+        { osc: organOsc1, gain: organGain },
+        { osc: organOsc2, gain: organGain },
+        { osc: bassOsc, gain: bassGain }
+      );
+
+      t += dur;
+    });
+
+    const totalDuration = t - now;
+    this.bgmTimer = window.setTimeout(() => {
+      if (this.bgmPlaying && this.bgmMode === 'original') {
+        this.playOriginalRockTrack();
       }
     }, Math.max(100, Math.floor(totalDuration * 1000) - 35));
   }
