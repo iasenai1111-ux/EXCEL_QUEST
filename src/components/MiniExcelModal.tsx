@@ -55,33 +55,31 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handle cell click in table
+  // Clique em referência: insere a célula na posição atual do cursor da barra fx.
+  // Não acrescentar + automaticamente: o aluno deve escolher a operação.
+  const insertReference = (coord: string) => {
+    const input = inputRef.current;
+    const from = input?.selectionStart ?? formulaInput.length;
+    const to = input?.selectionEnd ?? from;
+    setFormulaInput(previous => previous.slice(0, from) + coord + previous.slice(to));
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(from + coord.length, from + coord.length);
+    });
+  };
+
   const handleCellClick = (cellCoord: string) => {
     soundManager.playClick();
-
-    // If currently editing the target cell and formula starts with '=', clicking other cells inserts their reference
-    if (selectedCell === targetCellKey && formulaInput.startsWith('=')) {
-      if (cellCoord !== targetCellKey) {
-        // Append cell coordinate
-        setFormulaInput(prev => {
-          // If ends with operator or parenthesis, just append
-          if (/[+\-*/(:;,=]$/.test(prev.trim())) {
-            return prev + cellCoord;
-          }
-          // If ends with another cell or number without operator, insert + or append
-          return prev + ' + ' + cellCoord;
-        });
-        inputRef.current?.focus();
-        return;
-      }
+    // Quando a fórmula começou com =, qualquer clique em uma célula de dados
+    // insere sua referência, sem trocar a célula que recebe o resultado.
+    if (!isCompleted && formulaInput.trimStart().startsWith('=') && cellCoord !== targetCellKey) {
+      insertReference(cellCoord);
+      return;
     }
 
-    // Otherwise select the cell
+    // O aluno escolhe a célula de resposta; a barra fx permanece editável.
     setSelectedCell(cellCoord);
-    if (cellCoord === targetCellKey && !formulaInput) {
-      // Keep focused on target
-    }
-    inputRef.current?.focus();
+    if (cellCoord === targetCellKey) inputRef.current?.focus();
   };
 
   // Quick button actions
@@ -120,6 +118,11 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
         message: 'Por favor, digite uma fórmula antes de pressionar Enter.'
       });
       soundManager.playError();
+      return;
+    }
+
+    if (selectedCell !== targetCellKey) {
+      setFeedback({ type: 'error', message: `Selecione ${targetCellKey} para inserir a fórmula de resposta.` });
       return;
     }
 
@@ -264,6 +267,7 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
               type="text"
               value={formulaInput}
               onChange={(e) => setFormulaInput(e.target.value)}
+              aria-label="Barra de fórmulas do Excel"
               onKeyDown={handleKeyDown}
               disabled={isCompleted}
               placeholder={`Digite a fórmula para ${targetCellKey} (ex: ${stage.challenge.acceptedFormulasDescription.split(' ')[0]})...`}
@@ -461,6 +465,10 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
                       return (
                         <td
                           key={coord}
+                          onMouseDown={(event) => {
+                            // Preserva a seleção/cursor da barra fx ao clicar em outra célula.
+                            if (formulaInput.trimStart().startsWith('=') && coord !== targetCellKey) event.preventDefault();
+                          }}
                           onClick={() => handleCellClick(coord)}
                           className={`relative p-2.5 border transition cursor-pointer text-sm font-sans ${cellBg} ${textColor} ${borderColor} ${hintPulseClass} ${selectedOutlineClass}`}
                         >
