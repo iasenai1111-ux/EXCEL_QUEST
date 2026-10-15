@@ -284,26 +284,26 @@ export default function App() {
           <div className="w-full max-w-6xl px-3 sm:px-6 py-4 flex flex-col items-center">
             
             {/* Stage Navigation / Breadcrumbs Bar */}
-            <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-3 p-3 bg-slate-900/80 rounded-2xl border border-slate-700/80 backdrop-blur">
+            <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-3 p-3.5 bg-[#172747] rounded-2xl border border-[#334E77] shadow-lg">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
                     soundManager.playClick();
                     setGameMode('menu');
                   }}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition active:scale-95"
+                  className="px-3.5 py-2 btn-game btn-game-surface text-xs font-bold text-[#F8FAFC] flex items-center gap-1.5"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-4 h-4 text-[#22D3EE]" />
                   <span>Menu Principal</span>
                 </button>
 
-                <div className="h-5 w-px bg-slate-700 mx-1 hidden sm:block" />
+                <div className="h-5 w-px bg-[#334E77] mx-1 hidden sm:block" />
 
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-white text-sm sm:text-base">
+                  <span className="font-extrabold text-[#F8FAFC] text-sm sm:text-base font-mono">
                     {currentStage.title}
                   </span>
-                  <span className="text-xs text-cyan-300 font-mono hidden md:inline">
+                  <span className="text-xs text-[#22D3EE] font-mono hidden md:inline">
                     ({currentStage.subtitle})
                   </span>
                 </div>
@@ -316,9 +316,9 @@ export default function App() {
                     soundManager.playTerminalOpen();
                     setIsMiniExcelOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition active:scale-95"
+                  className="px-3.5 py-2 btn-game btn-game-play text-xs flex items-center gap-1.5"
                 >
-                  <FileSpreadsheet className="w-4 h-4" />
+                  <FileSpreadsheet className="w-4 h-4 text-white" />
                   <span>Terminal Mini-Excel</span>
                 </button>
 
@@ -327,7 +327,7 @@ export default function App() {
                     soundManager.playClick();
                     setIsRealExcelOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition"
+                  className="px-3.5 py-2 btn-game btn-game-continue text-xs flex items-center gap-1.5"
                 >
                   <span>Excel Real (.xlsx)</span>
                 </button>
@@ -339,7 +339,7 @@ export default function App() {
                       soundManager.playClick();
                       setCurrentStageId((prev) => prev - 1);
                     }}
-                    className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-slate-300 transition"
+                    className="p-2 btn-game btn-game-surface text-[#CBD5E1]"
                     title="Fase Anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -353,7 +353,7 @@ export default function App() {
                         soundManager.playClick();
                         setCurrentStageId((prev) => prev + 1);
                       }}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-slate-300 transition"
+                      className="p-2 btn-game btn-game-surface text-[#CBD5E1]"
                       title="Próxima Fase Desbloqueada"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -389,17 +389,17 @@ export default function App() {
             />
 
             {/* Quick Pedagogical Mission Brief Box below canvas */}
-            <div className="w-full mt-4 p-4 bg-slate-900/90 border border-slate-700/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="w-full mt-4 p-4 bg-[#172747] border border-[#334E77] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[#22D3EE] font-bold">
                     Missão Atual:
                   </span>
-                  <span className="font-bold text-white text-xs sm:text-sm">
+                  <span className="font-bold text-[#F8FAFC] text-xs sm:text-sm">
                     {currentStage.challenge.instruction}
                   </span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-[#CBD5E1]">
                   {currentStage.storyIntro}
                 </p>
               </div>
@@ -407,9 +407,9 @@ export default function App() {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setIsMiniExcelOpen(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition active:scale-95"
+                  className="px-4 py-2.5 btn-game btn-game-play text-xs flex items-center gap-2"
                 >
-                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <Sparkles className="w-4 h-4 text-[#FFD166]" />
                   <span>Resolver Desafio</span>
                 </button>
               </div>

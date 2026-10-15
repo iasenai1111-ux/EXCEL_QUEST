@@ -639,17 +639,17 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     <div className="relative w-full flex flex-col items-center select-none">
       
       {/* Viewport Frame */}
-      <div className="relative w-full max-w-5xl rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-2xl bg-[#090f21]">
+      <div className="relative w-full max-w-5xl rounded-3xl overflow-hidden border-2 border-[#334E77] shadow-[0_16px_40px_rgba(16,27,53,0.8)] bg-[#101B35]">
         
         {/* Retro Mario-Style HUD Bar */}
-        <div className="absolute top-2.5 left-3 right-3 z-30 flex items-center justify-between text-xs font-mono font-bold text-white bg-slate-950/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/70 shadow-lg">
+        <div className="absolute top-2.5 left-3 right-3 z-30 flex items-center justify-between text-xs font-mono font-bold text-[#F8FAFC] bg-[#101B35]/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#334E77] shadow-lg">
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="px-2 py-0.5 bg-blue-900/90 text-cyan-200 border border-cyan-400/50 rounded-lg text-[10px] font-black tracking-wider">
+            <span className="px-2 py-0.5 bg-[#2563EB]/40 text-[#22D3EE] border border-[#2563EB] rounded-lg text-[10px] font-black tracking-wider">
               SENAIZINHO
             </span>
             {isGodMode && (
               <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black rounded-lg text-[10px] animate-pulse shadow-md">
+                <span className="px-2 py-0.5 bg-gradient-to-r from-[#FFD166] to-[#FF9F1C] text-[#0F172A] font-black rounded-lg text-[10px] animate-pulse shadow-md">
                   👑 ROOT SUPERUSUÁRIO
                 </span>
                 {onShowEnding && (
@@ -658,7 +658,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                       soundManager.playVictory();
                       onShowEnding();
                     }}
-                    className="px-2 py-0.5 bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black rounded-lg text-[10px] shadow transition flex items-center gap-1"
+                    className="px-2 py-0.5 bg-[#FFD166] hover:bg-[#FFE885] active:scale-95 text-[#0F172A] font-black rounded-lg text-[10px] shadow transition flex items-center gap-1"
                     title="Exibir tela de encerramento / formatura para os alunos"
                   >
                     <span>🏆 ZERAR JOGO</span>
@@ -670,7 +670,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                       soundManager.playClick();
                       onOpenTeacherDashboard();
                     }}
-                    className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 border border-amber-500/50 rounded-lg text-[10px] font-bold transition flex items-center gap-1"
+                    className="px-2 py-0.5 bg-[#172747] hover:bg-[#213556] active:scale-95 text-[#FFD166] border border-[#FFD166]/40 rounded-lg text-[10px] font-bold transition flex items-center gap-1"
                     title="Abrir Painel do Professor Root"
                   >
                     <span>⚙️ PAINEL</span>
@@ -678,13 +678,13 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 )}
               </div>
             )}
-            <span className="flex items-center gap-1 text-red-400 font-extrabold" title="Vidas Restantes">
-              <Heart className="w-4 h-4 fill-red-500 animate-pulse" />
+            <span className="flex items-center gap-1 text-[#EF4444] font-extrabold" title="Vidas Restantes">
+              <Heart className="w-4 h-4 fill-[#EF4444] animate-pulse" />
               <span>x{lives}</span>
             </span>
-            <span className="text-slate-500">•</span>
-            <span className="flex items-center gap-1 text-cyan-300">
-              <Zap className="w-4 h-4 text-cyan-400" />
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-1 text-[#22D3EE]">
+              <Zap className="w-4 h-4 text-[#22D3EE]" />
               <span>DERROTADOS: {defeatedEnemies}</span>
             </span>
           </div>
@@ -695,10 +695,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               onClick={handleToggleMusic}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition active:scale-95 border ${
                 isBgmOn
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 animate-pulse shadow-sm shadow-amber-500/30'
-                  : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                  ? 'bg-[#FF9F1C]/20 text-[#FFD166] border-[#FF9F1C] shadow-sm shadow-[#FF9F1C]/30'
+                  : 'bg-[#172747] text-[#CBD5E1] border-[#334E77] hover:text-[#F8FAFC]'
               }`}
-              title="Música 8-Bit: Carry on Wayward Son (Kansas) - Clique para Ligar/Desligar"
+              title="Música: Carry on Wayward Son (Kansas) - Clique para Ligar/Desligar"
             >
               <span>🎸 Carry on Wayward Son</span>
               <span className="font-mono text-[9px] px-1 rounded bg-black/40">
@@ -713,18 +713,18 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                   soundManager.playClick();
                   onOpenSettings();
                 }}
-                className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 hover:text-white transition active:scale-95"
+                className="p-1 rounded-lg bg-[#172747] hover:bg-[#213556] border border-[#334E77] text-[#22D3EE] hover:text-white transition active:scale-95"
                 title="Ajustar Volume & Configurações de Áudio"
               >
                 <Settings className="w-3.5 h-3.5" />
               </button>
             )}
 
-            <span className="text-amber-300 flex items-center gap-1 font-extrabold">
+            <span className="text-[#FFD166] flex items-center gap-1 font-extrabold">
               <span>FASE {stage.id}-1</span>
             </span>
-            <span className="text-slate-500 hidden sm:inline">•</span>
-            <span className={`hidden sm:inline ${isStageCompleted ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}`}>
+            <span className="text-slate-600 hidden sm:inline">•</span>
+            <span className={`hidden sm:inline ${isStageCompleted ? 'text-[#22C55E] font-bold' : 'text-[#FF9F1C] font-bold'}`}>
               {isStageCompleted ? '🔓 BARREIRA LIBERADA' : '🔒 RESOLVA O TERMINAL'}
             </span>
           </div>
@@ -738,9 +738,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 soundManager.playTerminalOpen();
                 onOpenTerminal();
               }}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-2xl border-2 border-emerald-300 flex items-center gap-2 cursor-pointer transition active:scale-95"
+              className="px-5 py-2.5 btn-game btn-game-play text-xs sm:text-sm flex items-center gap-2 shadow-2xl cursor-pointer"
             >
-              <Monitor className="w-4 h-4 text-emerald-200" />
+              <Monitor className="w-4 h-4 text-white" />
               <span>[E] ABRIR TERMINAL DE FÓRMULAS</span>
             </button>
           </div>
@@ -759,16 +759,16 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         />
 
         {/* Bottom Game Canvas Status Strip */}
-        <div className="px-4 py-2 bg-[#080d1c] border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
+        <div className="px-4 py-2.5 bg-[#172747] border-t border-[#334E77] flex items-center justify-between text-xs text-[#CBD5E1]">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 font-medium">
-              <Info className="w-3.5 h-3.5 text-cyan-400" />
+              <Info className="w-3.5 h-3.5 text-[#22D3EE]" />
               <span className="hidden sm:inline">Pule embaixo dos blocos <strong>[?]</strong>, esmague os robôs pulando por cima e segure <strong>Shift</strong> para correr!</span>
               <span className="sm:hidden">Corra, salte nos robôs e cabeceie os blocos!</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 font-mono text-[11px] text-[#22D3EE]">
             <span>Terminal em x=1720</span>
             <span>•</span>
             <span>Bandeira em x=2520</span>
@@ -785,7 +785,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             onMouseUp={() => (keysDownRef.current['arrowleft'] = false)}
             onTouchStart={() => (keysDownRef.current['arrowleft'] = true)}
             onTouchEnd={() => (keysDownRef.current['arrowleft'] = false)}
-            className="w-12 h-12 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 border border-slate-600 rounded-xl flex items-center justify-center text-slate-200 shadow select-none active:scale-95 transition"
+            className="w-12 h-12 btn-game btn-game-surface rounded-2xl flex items-center justify-center text-[#F8FAFC]"
             aria-label="Mover para esquerda"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -795,7 +795,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             onMouseUp={() => (keysDownRef.current['arrowright'] = false)}
             onTouchStart={() => (keysDownRef.current['arrowright'] = true)}
             onTouchEnd={() => (keysDownRef.current['arrowright'] = false)}
-            className="w-12 h-12 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 border border-slate-600 rounded-xl flex items-center justify-center text-slate-200 shadow select-none active:scale-95 transition"
+            className="w-12 h-12 btn-game btn-game-surface rounded-2xl flex items-center justify-center text-[#F8FAFC]"
             aria-label="Mover para direita"
           >
             <ArrowRight className="w-6 h-6" />
@@ -806,15 +806,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsSprinting(!isSprinting)}
-            className={`px-3 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 shadow select-none transition active:scale-95 ${
+            className={`px-3.5 py-2.5 btn-game rounded-2xl text-xs font-bold flex items-center gap-1.5 ${
               isSprinting
-                ? 'bg-amber-500 text-slate-950 border-amber-300 ring-2 ring-amber-300'
-                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-600'
+                ? 'bg-[#FF9F1C] text-[#0F172A] border-2 border-[#FFD166] shadow-[0_4px_0_#B45309]'
+                : 'btn-game-surface text-[#FFD166]'
             }`}
-            title="Segurar Shift no teclado também ativa corrida"
+            title="Segurar Shift no teclado também ativa corrida rápida"
           >
             <Zap className="w-4 h-4 fill-current" />
-            <span>{isSprinting ? 'CORRENDO (DASH)' : 'CORRER (SHIFT)'}</span>
+            <span>{isSprinting ? 'CORRENDO' : 'CORRER (SHIFT)'}</span>
           </button>
 
           <button
@@ -834,9 +834,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
                 soundManager.playJump();
               }
             }}
-            className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-extrabold text-xs rounded-xl shadow border border-cyan-400 flex items-center gap-1.5 select-none transition active:scale-95"
+            className="px-5 py-2.5 btn-game btn-game-play text-xs flex items-center gap-1.5"
           >
-            <ArrowUp className="w-5 h-5" />
+            <ArrowUp className="w-5 h-5 text-white" />
             <span>PULAR</span>
           </button>
 
@@ -845,9 +845,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               soundManager.playTerminalOpen();
               onOpenTerminal();
             }}
-            className="px-3 py-2.5 bg-emerald-700/90 hover:bg-emerald-600 active:bg-emerald-800 text-white text-xs font-bold rounded-xl border border-emerald-500/50 flex items-center gap-1.5 shadow select-none transition active:scale-95"
+            className="px-4 py-2.5 btn-game btn-game-cyan text-xs flex items-center gap-1.5"
           >
-            <Monitor className="w-4 h-4 text-emerald-300" />
+            <Monitor className="w-4 h-4 text-white" />
             <span>Terminal</span>
           </button>
         </div>

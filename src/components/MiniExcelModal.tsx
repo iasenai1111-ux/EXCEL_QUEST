@@ -191,11 +191,11 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
   const isCellHighlighted = attemptsCount >= 2;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#111c38] border-2 border-emerald-500/50 rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#101B35]/80 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl overflow-hidden">
         
         {/* Top Excel Green Header Bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#107c41] to-[#0b5c30] text-white">
+        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#15803D] to-[#166534] text-white">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-white text-[#107c41] font-extrabold text-sm flex items-center justify-center rounded shadow">
               X
@@ -547,22 +547,22 @@ export const MiniExcelModal: React.FC<MiniExcelModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-lg transition"
+              className="px-4 py-2 btn-game btn-game-surface text-xs"
             >
               Voltar ao Cenário
             </button>
             {isCompleted ? (
               <button
                 onClick={onClose}
-                className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-lg shadow-lg flex items-center gap-1.5 transition"
+                className="px-5 py-2 btn-game btn-game-play text-xs flex items-center gap-1.5"
               >
                 <span>Avançar no Jogo</span>
-                <Sparkles className="w-4 h-4 text-amber-300" />
+                <Sparkles className="w-4 h-4 text-[#FFD166]" />
               </button>
             ) : (
               <button
                 onClick={handleSubmitFormula}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-lg flex items-center gap-1.5 transition"
+                className="px-5 py-2 btn-game btn-game-play text-xs flex items-center gap-1.5"
               >
                 <span>Verificar Fórmula</span>
                 <CornerDownLeft className="w-3.5 h-3.5" />

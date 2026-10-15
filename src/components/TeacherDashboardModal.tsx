@@ -164,8 +164,8 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
   // If not authenticated, render the secure password challenge screen
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
-        <div className="relative w-full max-w-md bg-[#0c1429] border-2 border-amber-500/70 rounded-3xl shadow-2xl overflow-hidden p-6 text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#101B35]/85 backdrop-blur-md animate-fadeIn">
+        <div className="relative w-full max-w-md bg-[#101B35] border-2 border-[#FFD166]/60 rounded-3xl shadow-2xl overflow-hidden p-6 text-center">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-white rounded-lg transition"
@@ -259,11 +259,11 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-5xl max-h-[92vh] bg-[#0c1429] border-2 border-indigo-500/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-[#101B35]/85 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-5xl max-h-[92vh] bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl overflow-hidden flex flex-col">
         
         {/* Top Header */}
-        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-500/40 text-white">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 bg-gradient-to-r from-[#172747] via-[#213556] to-[#172747] border-b border-[#334E77] text-white">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-500/20 rounded-xl border border-amber-400/50 text-amber-300">
               <GraduationCap className="w-6 h-6" />

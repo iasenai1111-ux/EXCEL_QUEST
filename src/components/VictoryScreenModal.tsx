@@ -48,11 +48,11 @@ export const VictoryScreenModal: React.FC<VictoryScreenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-gradient-to-b from-[#1a0808] via-[#0d162d] to-[#080d1a] border-4 border-amber-400 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-[#101B35]/90 backdrop-blur-md animate-fadeIn overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-[#101B35] border-4 border-[#FFD166] rounded-3xl shadow-2xl overflow-hidden flex flex-col my-4">
         
         {/* Top Street Fighter Arcade Marquee Banner */}
-        <div className="relative px-6 py-4 bg-gradient-to-r from-red-700 via-amber-600 to-red-700 text-center text-white border-b-4 border-amber-300 shadow-lg flex items-center justify-between">
+        <div className="relative px-6 py-4 bg-gradient-to-r from-[#EF4444] via-[#FF9F1C] to-[#EF4444] text-center text-white border-b-4 border-[#FFD166] shadow-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-yellow-300 animate-ping" />
             <span className="text-xs sm:text-sm font-mono font-black tracking-widest text-yellow-200 uppercase drop-shadow">
@@ -195,9 +195,9 @@ export const VictoryScreenModal: React.FC<VictoryScreenModalProps> = ({
                 soundManager.playCoin();
                 onDownloadWorkbook();
               }}
-              className="py-3.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs sm:text-sm rounded-xl border-2 border-slate-600 flex items-center justify-center gap-2 transition active:scale-95 shadow-md"
+              className="py-3.5 px-4 btn-game btn-game-surface text-xs sm:text-sm flex items-center justify-center gap-2"
             >
-              <Download className="w-4 h-4 text-cyan-400" />
+              <Download className="w-4 h-4 text-[#22D3EE]" />
               <span>Baixar Planilha XLSX do Aluno</span>
             </button>
 
@@ -206,7 +206,7 @@ export const VictoryScreenModal: React.FC<VictoryScreenModalProps> = ({
                 soundManager.playSuccess();
                 onOpenSubmit();
               }}
-              className="py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-xl flex items-center justify-center gap-2 transition active:scale-95 border-2 border-emerald-400"
+              className="py-3.5 px-4 btn-game btn-game-play text-xs sm:text-sm flex items-center justify-center gap-2"
             >
               <Send className="w-4 h-4 text-white" />
               <span>Entregar Atividade ao Professor</span>
@@ -216,18 +216,18 @@ export const VictoryScreenModal: React.FC<VictoryScreenModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-[#060b18] border-t border-slate-800 flex flex-wrap justify-between items-center gap-3">
+        <div className="p-4 bg-[#172747] border-t border-[#334E77] flex flex-wrap justify-between items-center gap-3">
           <button
             onClick={triggerConfetti}
-            className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 font-bold transition"
+            className="text-xs text-[#FFD166] hover:text-[#FFE885] flex items-center gap-1.5 font-bold transition active:scale-95"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 text-[#FFD166]" />
             <span>Explodir Mais Confetes!</span>
           </button>
 
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold rounded-xl transition"
+            className="px-5 py-2 btn-game btn-game-surface text-xs"
           >
             Voltar ao Mapa de Fases
           </button>

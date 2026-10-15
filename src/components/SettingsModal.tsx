@@ -138,8 +138,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-[#0e172f] via-[#090f23] to-[#060a19] border-2 border-cyan-500/50 rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-7 text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#101B35]/85 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-lg bg-[#101B35] border-2 border-[#334E77] rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-7 text-white">
         
         {/* Ambient Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-32 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -492,10 +492,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         </div>
 
         {/* Modal Actions */}
-        <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
+        <div className="mt-5 pt-3 border-t border-[#334E77] flex items-center justify-between gap-3">
           <button
             onClick={handleResetDefaults}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition active:scale-95 border border-slate-700"
+            className="px-3.5 py-2 btn-game btn-game-surface text-xs font-semibold flex items-center gap-1.5"
             title="Restaurar volumes padrão"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -507,7 +507,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               soundManager.playClick();
               onClose();
             }}
-            className="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition active:scale-95"
+            className="px-5 py-2.5 btn-game btn-game-play text-xs"
           >
             Salvar & Fechar
           </button>
