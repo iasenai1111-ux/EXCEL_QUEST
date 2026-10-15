@@ -55,7 +55,7 @@ class SoundManager {
       if (savedUrl) {
         try {
           const parsed = new URL(savedUrl);
-          if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+          if ((parsed.protocol === 'https:' || parsed.protocol === 'http:') && /\\.(mp3|ogg|wav|m4a|aac)$/i.test(parsed.pathname)) {
             this.originalAudio = new Audio();
             this.originalAudio.src = parsed.href;
             this.originalAudio.loop = true;
