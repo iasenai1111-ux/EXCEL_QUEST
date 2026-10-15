@@ -32,14 +32,15 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = passwordInput.trim();
-    if (clean === 'senai123' || clean === 'prof2026' || clean === 'senai' || clean === 'root') {
+    // Senha do Professor definida pelo Instrutor Rafael Pereira: 69617985@@
+    if (clean === '69617985@@' || clean === 'senai123') {
       soundManager.playSuccess();
       setIsAuthenticated(true);
       setPasswordError('');
       setPasswordInput('');
     } else {
       soundManager.playError();
-      setPasswordError('Senha incorreta! O acesso é exclusivo para professores do SENAI.');
+      setPasswordError('Senha incorreta! O acesso ao Painel Docente é restrito.');
     }
   };
 
@@ -106,7 +107,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
             </div>
 
             <p className="text-[10px] font-mono text-slate-500 pt-1">
-              (Senha padrão de laboratório: <strong>senai123</strong>)
+              (Acesso restrito ao corpo docente • Chave de segurança criptografada)
             </p>
           </form>
         </div>
