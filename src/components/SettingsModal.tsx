@@ -38,6 +38,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [customAudioName, setCustomAudioName] = useState<string>(soundManager.getCustomAudioName());
   const [streamUrlInput, setStreamUrlInput] = useState<string>(soundManager.getSavedOriginalAudioUrl());
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
+  const [youtubeInput, setYoutubeInput] = useState<string>('');
+  const [youtubeVideoId, setYoutubeVideoId] = useState<string>('');
+  const [youtubeError, setYoutubeError] = useState<string>('');
+
+  const extractYoutubeId = (raw: string): string | null => {
+    try {
+      const u = new URL(raw.trim());
+      const hostname = u.hostname.toLowerCase().replace(/^www\./, '');
+      let id: string | null = null;
+      if (hostname === 'youtu.be') id = u.pathname.split('/')[1];
+      else if (hostname === 'youtube.com' || hostname === 'm.youtube.com' || hostname === 'music.youtube.com' || hostname === 'youtube-nocookie.com') {
+        id = u.pathname === '/watch' ? u.searchParams.get('v') : u.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)/)?.[1] || null;
+      }
+      return id && /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+    } catch { return null; }
+  };
+
   const [audioUrlError, setAudioUrlError] = useState<string>('');
   const [playerError, setPlayerError] = useState<string>(soundManager.getOriginalAudioError());
 
@@ -367,6 +384,47 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </button>
                 </div>
               )}
+
+              <div className="mt-3 rounded-xl border border-red-500/35 bg-slate-950/70 p-3 space-y-2">
+                <p className="text-xs font-bold text-red-200">▶️ Ouvir pelo YouTube (vídeo incorporado)</p>
+                <p className="text-[11px] text-slate-300">Cole um link de vídeo do YouTube. Ele toca no player oficial abaixo, separado do reprodutor MP3. É necessário clicar em reproduzir no próprio vídeo.</p>
+                <div className="flex gap-2 flex-wrap">
+                  <input
+                    type="url"
+                    value={youtubeInput}
+                    onChange={event => setYoutubeInput(event.target.value)}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    aria-label="Link de vídeo do YouTube"
+                    className="min-w-0 flex-1 rounded-lg border border-slate-600 bg-slate-950 p-2 text-xs text-white"
+                  />
+                  <button
+                    type="button"
+                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3 py-2 text-xs font-bold text-white"
+                    onClick={() => {
+                      const id = extractYoutubeId(youtubeInput);
+                      if (!id) { setYoutubeError('Cole um link válido de vídeo do YouTube.'); return; }
+                      setYoutubeError('');
+                      soundManager.stopBGM();
+                      setYoutubeVideoId(id);
+                    }}
+                  >Abrir player</button>
+                </div>
+                {youtubeError && <p role="alert" className="text-xs text-rose-300">{youtubeError}</p>}
+                {youtubeVideoId && (
+                  <div className="space-y-2">
+                    <iframe
+                      className="aspect-video w-full rounded-lg border border-slate-700"
+                      src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}?rel=0`}
+                      title="Vídeo do YouTube"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                    <button type="button" onClick={() => { setYoutubeVideoId(''); }} className="text-xs text-slate-300 underline">Fechar player</button>
+                    <p className="text-[10px] text-slate-400">O vídeo precisa permitir incorporação. Volume e reprodução são controlados pelo YouTube; o player fecha ao sair das configurações.</p>
+                  </div>
+                )}
+              </div>
 
               {audioUrlError && <p role="alert" className="text-xs text-rose-300">{audioUrlError}</p>}
               {playerError && <p role="alert" className="text-xs text-amber-300">{playerError}</p>}
