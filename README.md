@@ -66,7 +66,7 @@ O jogo conta com um sistema de áudio completo com a lendária música **"Carry 
 | **Interagir com Terminais** | `Barra de Espaço` ou `Enter` | Botão de Ação |
 | **Alternar Áudio (8-Bit / Original)** | Clique no botão `👾/🎸` no topo | Toque no botão de áudio |
 | **Menu de Configurações** | Ícone de engrenagem | Toque na engrenagem |
-| **Painel do Professor** | Ícone de capelo docente | Autenticação com `69617985@@` |
+| **Painel do Professor** | Ícone de capelo docente | Acesso demonstrativo, sem proteção de servidor |
 
 ---
 

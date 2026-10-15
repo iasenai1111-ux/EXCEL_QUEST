@@ -124,15 +124,9 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = passwordInput.trim();
-    // Senha do Professor definida pelo Instrutor Rafael Pereira: 69617985@@
-    // Suporte também a credenciais alternativas seguras
+    // Demonstração pública: autenticação real exige backend.
     if (
-      clean === '69617985@@' ||
-      clean === 'senai123' ||
-      clean === 'root' ||
-      clean === 'superroot' ||
-      clean === 'professor_root' ||
-      clean === 'admin69617985@@'
+      clean.toLowerCase() === 'demo'
     ) {
       soundManager.playSuccess();
       setIsAuthenticated(true);
@@ -141,7 +135,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
       setPasswordInput('');
     } else {
       soundManager.playError();
-      setPasswordError('Senha incorreta! Acesso restrito ao corpo docente do SENAI-SP.');
+      setPasswordError('Código inválido. Digite demo para abrir a demonstração.');
     }
   };
 
@@ -161,7 +155,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
     }, 2000);
   };
 
-  // If not authenticated, render the secure password challenge screen
+  // Public demonstration mode; client-side checks cannot protect private data.
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#101B35]/85 backdrop-blur-md animate-fadeIn">
@@ -178,19 +172,19 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
           </div>
 
           <span className="text-[10px] font-mono tracking-widest uppercase text-amber-400 font-extrabold block">
-            Área Restrita aos Professores • SENAI-SP
+            Área de demonstração pedagógica • SENAI-SP
           </span>
           <h2 className="text-xl font-black text-white mt-1">
             Painel Docente & Superusuário ROOT
           </h2>
           <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-            Acesso reservado ao Instrutor de Formação Profissional <strong>Rafael Pereira</strong> e equipe pedagógica. Contém os controles de imortalidade, gabaritos e zeramento para demonstração aos alunos.
+            Este painel é uma demonstração em site público e não possui autenticação segura. Não armazene informações sigilosas ou dados pessoais aqui.
           </p>
 
           <form onSubmit={handlePasswordSubmit} className="mt-5 space-y-3.5">
             <div className="text-left">
               <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
-                Senha do Professor:
+                Código de demonstração:
               </label>
               <div className="relative">
                 <input
@@ -202,29 +196,16 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
                     setPasswordInput(e.target.value);
                     if (passwordError) setPasswordError('');
                   }}
-                  placeholder="Digite a senha docente..."
+                  placeholder="Digite demo"
                   className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 focus:border-amber-400 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition"
                 />
                 <KeyRound className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
-            {/* Quick Helper Badge */}
-            <div className="p-2.5 bg-amber-950/40 border border-amber-500/30 rounded-xl flex items-center justify-between text-[11px]">
-              <span className="text-amber-200 font-mono">
-                🔑 Senha Cadastrada: <strong>69617985@@</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setPasswordInput('69617985@@');
-                  if (passwordError) setPasswordError('');
-                }}
-                className="px-2 py-0.5 bg-amber-500/30 hover:bg-amber-500/50 text-amber-300 font-bold rounded text-[10px] border border-amber-400/40 transition active:scale-95"
-              >
-                Preencher
-              </button>
-            </div>
+            <p className="text-[11px] text-amber-300 text-left">
+              Modo público: digite <strong>demo</strong>. A proteção real exige autenticação no servidor.
+            </p>
 
             {passwordError && (
               <div className="p-2.5 bg-red-950/80 border border-red-700 text-red-200 text-xs rounded-xl font-medium animate-fadeIn">
@@ -238,7 +219,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
                 className="w-full py-3 bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95 shadow-amber-500/30"
               >
                 <Unlock className="w-4 h-4" />
-                <span>Desbloquear como Professor Root</span>
+                <span>Abrir demonstração docente</span>
               </button>
             </div>
 
@@ -1059,7 +1040,7 @@ export const TeacherDashboardModal: React.FC<TeacherDashboardModalProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-mono text-[11px] text-slate-300">
-              Professor Root: <strong>Autorizado</strong> (69617985@@)
+              Painel docente: <strong>Modo demonstração</strong>
             </span>
           </div>
           <button

@@ -38,6 +38,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [customAudioName, setCustomAudioName] = useState<string>(soundManager.getCustomAudioName());
   const [streamUrlInput, setStreamUrlInput] = useState<string>('');
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
+  const [audioUrlError, setAudioUrlError] = useState<string>('');
+  const [playerError, setPlayerError] = useState<string>(soundManager.getOriginalAudioError());
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +55,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       setIsBgmPlaying(soundManager.isBGMPlaying());
       setBgmMode(soundManager.getBgmMode());
       setCustomAudioName(soundManager.getCustomAudioName());
+      setPlayerError(soundManager.getOriginalAudioError());
     };
 
     const unsubscribe = soundManager.subscribe(syncState);
@@ -302,8 +305,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      soundManager.loadCustomOriginalAudio(file);
-                      soundManager.playSuccess();
+                      try {
+                        soundManager.loadCustomOriginalAudio(file);
+                        setAudioUrlError('');
+                        soundManager.playSuccess();
+                      } catch (error) {
+                        setAudioUrlError(error instanceof Error ? error.message : 'Arquivo de áudio inválido.');
+                      }
                     }
                   }}
                 />
@@ -335,16 +343,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                     type="url"
                     value={streamUrlInput}
                     onChange={(e) => setStreamUrlInput(e.target.value)}
-                    placeholder="https://.../carry_on_wayward_son.mp3"
+                    placeholder="https://exemplo.com/musica.mp3"
+                    aria-label="URL direta de arquivo de áudio"
                     className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-amber-400"
                   />
                   <button
                     type="button"
                     onClick={() => {
                       if (streamUrlInput.trim()) {
-                        soundManager.setOriginalAudioUrl(streamUrlInput.trim());
-                        setShowUrlInput(false);
-                        soundManager.playSuccess();
+                        try {
+                          soundManager.setOriginalAudioUrl(streamUrlInput.trim());
+                          setAudioUrlError('');
+                          soundManager.playSuccess();
+                        } catch (error) {
+                          setAudioUrlError(error instanceof Error ? error.message : 'Endereço de áudio inválido.');
+                        }
                       }
                     }}
                     className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition"
@@ -354,8 +367,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
               )}
 
-              <p className="text-[10px] text-slate-400 leading-tight">
-                💡 Dica: No laboratório, você pode selecionar qualquer arquivo MP3 da música Kansas - Carry on Wayward Son ou ouvir o arranjo de estúdio em alta definição com guitarras e bateria de rock real!
+              {audioUrlError && <p role="alert" className="text-xs text-rose-300">{audioUrlError}</p>}
+              {playerError && <p role="alert" className="text-xs text-amber-300">{playerError}</p>}
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                Use um link direto HTTPS para MP3 ou OGG hospedado com permissão de reprodução, ou carregue um áudio do seu computador. Links de páginas YouTube, Spotify e serviços que exigem login não tocam diretamente. Utilize somente músicas que você tem direito de reproduzir.
               </p>
             </div>
           )}

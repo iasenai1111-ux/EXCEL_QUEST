@@ -481,10 +481,23 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             return;
           }
 
-          // Enemy patrol
+          // Inimigos detectam o herói quando ele se aproxima, mas não saem da
+          // área segura da fase: evita perseguição impossível de escapar.
+          const enemyCenter = enemy.x + enemy.w / 2;
+          const heroCenter = p.x + p.w / 2;
+          const distance = Math.abs(heroCenter - enemyCenter);
+          const seesHero = distance < 230 && Math.abs(p.y - enemy.y) < 125;
+          const pace = 1.1 + (enemy.id % 3) * 0.2;
+          const chaseSpeed = pace * 1.65;
+          const desiredDirection = seesHero ? Math.sign(heroCenter - enemyCenter) : Math.sign(enemy.vx) || 1;
+          enemy.vx = desiredDirection * (seesHero ? chaseSpeed : pace);
           enemy.x += enemy.vx;
-          if (enemy.x <= enemy.patrolMinX || enemy.x >= enemy.patrolMaxX) {
-            enemy.vx = -enemy.vx;
+          if (enemy.x < enemy.patrolMinX) {
+            enemy.x = enemy.patrolMinX;
+            enemy.vx = pace;
+          } else if (enemy.x + enemy.w > enemy.patrolMaxX) {
+            enemy.x = enemy.patrolMaxX - enemy.w;
+            enemy.vx = -pace;
           }
 
           // Check Stomp from above (Mario Stomp)
