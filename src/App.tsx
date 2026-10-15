@@ -51,6 +51,7 @@ export default function App() {
   const [isVictoryOpen, setIsVictoryOpen] = useState(false);
   const [isWorldMapOpen, setIsWorldMapOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [youtubeVideoId, setYoutubeVideoId] = useState('');
   const [isGameOverOpen, setIsGameOverOpen] = useState(false);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
@@ -88,7 +89,7 @@ export default function App() {
     }
     setCurrentStageId(1);
     setGameMode('playing');
-    soundManager.startGameplayBGM();
+    if (!youtubeVideoId) soundManager.startGameplayBGM();
   };
 
   const handleContinueGame = () => {
@@ -559,7 +560,21 @@ export default function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        onYoutubeVideoChange={(id) => {
+          setYoutubeVideoId(id);
+          if (id) soundManager.stopBGM();
+        }}
       />
+      {youtubeVideoId && (
+        <aside className="fixed bottom-4 right-4 z-[60] w-[min(340px,calc(100vw-24px))] rounded-xl border border-red-400/60 bg-[#101B35] p-2 shadow-2xl" aria-label="Player de música do YouTube">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className="text-xs font-bold text-white">▶ Música YouTube • durante o jogo</span>
+            <button type="button" className="rounded bg-red-600 px-2 py-1 text-xs text-white" onClick={() => { setYoutubeVideoId(''); soundManager.startGameplayBGM(); }}>Parar e fechar</button>
+          </div>
+          <iframe className="aspect-video w-full rounded-lg" title="Player de áudio e vídeo do YouTube" src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}?rel=0`} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+          <p className="text-[10px] text-slate-300">O vídeo permanece visível para permitir os controles oficiais. Pressione reproduzir no player.</p>
+        </aside>
+      )}
 
       {/* 12. Game Over Modal (Resets to Stage 1 & locks other stages) */}
       <GameOverModal
