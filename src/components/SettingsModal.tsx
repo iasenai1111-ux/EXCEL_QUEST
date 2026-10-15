@@ -24,9 +24,10 @@ import {
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onYoutubeVideoChange: (videoId: string) => void;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onYoutubeVideoChange }) => {
   const [masterVol, setMasterVol] = useState<number>(soundManager.getMasterVolume());
   const [bgmVol, setBgmVol] = useState<number>(soundManager.getBGMVolume());
   const [sfxVol, setSfxVol] = useState<number>(soundManager.getSFXVolume());
@@ -39,7 +40,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [streamUrlInput, setStreamUrlInput] = useState<string>(soundManager.getSavedOriginalAudioUrl());
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
   const [youtubeInput, setYoutubeInput] = useState<string>('');
-  const [youtubeVideoId, setYoutubeVideoId] = useState<string>('');
   const [youtubeError, setYoutubeError] = useState<string>('');
 
   const extractYoutubeId = (raw: string): string | null => {
@@ -83,20 +83,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   // Closing the modal must unmount the YouTube iframe, stopping playback.
   const closeSettings = () => {
-    setYoutubeVideoId('');
     setYoutubeError('');
     onClose();
   };
-
-  useEffect(() => {
-    if (!isOpen) setYoutubeVideoId('');
-  }, [isOpen]);
 
   // Handle ESC key to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        setYoutubeVideoId('');
         onClose();
       }
     };
@@ -418,25 +412,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       if (!id) { setYoutubeError('Cole um link válido de vídeo do YouTube.'); return; }
                       setYoutubeError('');
                       soundManager.stopBGM();
-                      setYoutubeVideoId(id);
+                      onYoutubeVideoChange(id);
                     }}
                   >Abrir player</button>
                 </div>
                 {youtubeError && <p role="alert" className="text-xs text-rose-300">{youtubeError}</p>}
-                {youtubeVideoId && (
-                  <div className="space-y-2">
-                    <iframe
-                      className="aspect-video w-full rounded-lg border border-slate-700"
-                      src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}?rel=0`}
-                      title="Vídeo do YouTube"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                    <button type="button" onClick={() => { setYoutubeVideoId(''); }} className="text-xs text-slate-300 underline">Fechar player</button>
-                    <p className="text-[10px] text-slate-400">O vídeo precisa permitir incorporação. Volume e reprodução são controlados pelo YouTube; o player fecha ao sair das configurações.</p>
-                  </div>
-                )}
+                <p className="text-[10px] text-slate-300">Após abrir, use o player flutuante no canto da tela. Ele continuará disponível enquanto você joga. Para parar, clique em “Parar e fechar”.</p>
               </div>
 
               {audioUrlError && <p role="alert" className="text-xs text-rose-300">{audioUrlError}</p>}
