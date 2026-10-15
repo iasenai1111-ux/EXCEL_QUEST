@@ -88,7 +88,11 @@ export default function App() {
       setIsStudentIdOpen(true);
       return;
     }
+    // Novo jogo deve zerar as fases e respostas antigas. Continuar preserva o save.
+    const fresh = resetGameProgress();
+    setProgress(fresh);
     setCurrentStageId(1);
+    setStageRestartToken(value => value + 1);
     setGameMode('playing');
     if (!youtubeVideoId) soundManager.startGameplayBGM();
   };
@@ -120,38 +124,32 @@ export default function App() {
 
   // Stage solved inside Mini-Excel
   const handleStageSuccess = (stageId: number, _formula: string, _value: number) => {
-    setProgress((prev) => {
-      const isAlreadyCompleted = prev.completedStages.includes(stageId);
-      const nextCompleted = isAlreadyCompleted
-        ? prev.completedStages
-        : [...prev.completedStages, stageId];
-
-      const nextStageId = stageId < LEVEL_1_STAGES.length ? stageId + 1 : stageId;
-      const nextHighest = Math.max(prev.highestUnlockedStageId, nextStageId);
-      const addedXp = isAlreadyCompleted ? 20 : 100;
-
+    // Uma fórmula conclui somente a missão ativa, sem liberar fases futuras em bloco.
+    if (stageId !== currentStageId || stageId < 1 || stageId > LEVEL_1_STAGES.length) return;
+    setProgress(prev => {
+      const completed = Array.isArray(prev.completedStages) ? prev.completedStages : [];
+      const alreadyDone = completed.includes(stageId);
+      const nextCompleted = alreadyDone ? completed : [...completed, stageId];
+      const nextHighest = alreadyDone
+        ? prev.highestUnlockedStageId
+        : Math.max(prev.highestUnlockedStageId, Math.min(LEVEL_1_STAGES.length, stageId + 1));
+      const medalByStage: Record<number, string> = {
+        1: 'addition_master', 2: 'subtraction_pro', 3: 'multiplication_champ',
+        4: 'average_guru', 5: 'boss_slayer'
+      };
       let nextMedals = [...prev.medals];
-      // Medal for specific stages
-      if (stageId === 1) nextMedals = grantMedal('addition_master', nextMedals);
-      if (stageId === 2) nextMedals = grantMedal('subtraction_pro', nextMedals);
-      if (stageId === 3) nextMedals = grantMedal('multiplication_champ', nextMedals);
-      if (stageId === 4) nextMedals = grantMedal('average_guru', nextMedals);
-      if (stageId === 5) nextMedals = grantMedal('boss_slayer', nextMedals);
-
+      if (!alreadyDone) nextMedals = grantMedal(medalByStage[stageId], nextMedals);
       if (nextCompleted.length === LEVEL_1_STAGES.length) {
         nextMedals = grantMedal('senai_diploma', nextMedals);
       }
-
       return {
         ...prev,
-        xp: prev.xp + addedXp,
+        xp: prev.xp + (alreadyDone ? 0 : 100),
         completedStages: nextCompleted,
         highestUnlockedStageId: nextHighest,
         medals: nextMedals,
       };
     });
-
-    // Close Mini-Excel and trigger celebration modal
     setTimeout(() => {
       setIsMiniExcelOpen(false);
       setIsStageCompleteOpen(true);
