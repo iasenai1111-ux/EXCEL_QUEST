@@ -21,6 +21,8 @@ class SoundManager {
   private bgmMode: 'bit' | 'original' = 'bit';
   private originalAudio: HTMLAudioElement | null = null;
   private customAudioName: string = '';
+  private originalAudioError: string = '';
+  private originalObjectUrl: string | null = null;
 
   // BGM playback state
   private bgmPlaying: boolean = false;
@@ -563,39 +565,62 @@ class SoundManager {
     return this.customAudioName;
   }
 
-  public loadCustomOriginalAudio(file: File) {
-    try {
-      const url = URL.createObjectURL(file);
-      this.customAudioName = file.name;
-      if (!this.originalAudio) {
-        this.originalAudio = new Audio();
-        this.originalAudio.loop = true;
-      }
-      this.originalAudio.src = url;
-      this.applyGains();
-      this.setBgmMode('original');
-      if (this.bgmPlaying) {
-        this.originalAudio.play().catch(() => {});
-      }
-      this.notify();
-    } catch {}
+  public getOriginalAudioError(): string {
+    return this.originalAudioError;
   }
 
-  public setOriginalAudioUrl(url: string, name?: string) {
-    try {
-      this.customAudioName = name || 'Áudio Original (Stream)';
-      if (!this.originalAudio) {
-        this.originalAudio = new Audio();
-        this.originalAudio.loop = true;
-      }
-      this.originalAudio.src = url;
-      this.applyGains();
-      this.setBgmMode('original');
-      if (this.bgmPlaying) {
-        this.originalAudio.play().catch(() => {});
-      }
+  private setOriginalAudioSource(url: string, label: string, objectUrl: boolean) {
+    if (!this.originalAudio) {
+      this.originalAudio = new Audio();
+      this.originalAudio.loop = true;
+      this.originalAudio.preload = 'none';
+    }
+    this.originalAudio.pause();
+    if (this.originalObjectUrl) URL.revokeObjectURL(this.originalObjectUrl);
+    this.originalObjectUrl = objectUrl ? url : null;
+    this.originalAudioError = '';
+    this.customAudioName = label;
+    this.originalAudio.onerror = () => {
+      this.originalAudioError = 'Não foi possível carregar o áudio. Verifique se o link é direto, público e permite reprodução no navegador.';
       this.notify();
-    } catch {}
+    };
+    this.originalAudio.onplaying = () => {
+      this.originalAudioError = '';
+      this.notify();
+    };
+    this.originalAudio.src = url;
+    this.applyGains();
+    this.setBgmMode('original');
+    // A seleção do áudio é uma ação do usuário: tentar iniciar imediatamente.
+    this.bgmPlaying = true;
+    void this.originalAudio.play().then(() => {
+      this.notify();
+    }).catch(() => {
+      this.originalAudioError = 'Reprodução bloqueada ou formato não compatível. Use um link direto HTTPS para MP3/OGG ou selecione um arquivo local.';
+      this.notify();
+    });
+    this.notify();
+  }
+
+  public loadCustomOriginalAudio(file: File) {
+    if (!file.type.startsWith('audio/') && !/\\.(mp3|ogg|wav|m4a|aac)$/i.test(file.name)) {
+      throw new Error('Selecione um arquivo de áudio válido.');
+    }
+    const url = URL.createObjectURL(file);
+    this.setOriginalAudioSource(url, file.name, true);
+  }
+
+  public setOriginalAudioUrl(rawUrl: string, name?: string) {
+    let parsed: URL;
+    try { parsed = new URL(rawUrl.trim()); }
+    catch { throw new Error('Digite uma URL completa, começando com https://'); }
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      throw new Error('Somente URLs HTTP ou HTTPS são aceitas.');
+    }
+    if (/^(www\\.)?(youtube\\.com|youtu\\.be|open\\.spotify\\.com|music\\.apple\\.com|soundcloud\\.com)$/i.test(parsed.hostname)) {
+      throw new Error('Esse endereço é uma página de música, não um arquivo de áudio. Utilize uma URL direta de MP3/OGG.');
+    }
+    this.setOriginalAudioSource(parsed.href, name || 'Áudio por link', false);
   }
 
   public stopBGM() {
