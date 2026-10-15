@@ -36,7 +36,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(soundManager.isBGMPlaying());
   const [bgmMode, setBgmMode] = useState<'bit' | 'original'>(soundManager.getBgmMode());
   const [customAudioName, setCustomAudioName] = useState<string>(soundManager.getCustomAudioName());
-  const [streamUrlInput, setStreamUrlInput] = useState<string>('');
+  const [streamUrlInput, setStreamUrlInput] = useState<string>(soundManager.getSavedOriginalAudioUrl());
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
   const [audioUrlError, setAudioUrlError] = useState<string>('');
   const [playerError, setPlayerError] = useState<string>(soundManager.getOriginalAudioError());
@@ -56,6 +56,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       setBgmMode(soundManager.getBgmMode());
       setCustomAudioName(soundManager.getCustomAudioName());
       setPlayerError(soundManager.getOriginalAudioError());
+      setStreamUrlInput(soundManager.getSavedOriginalAudioUrl());
     };
 
     const unsubscribe = soundManager.subscribe(syncState);
@@ -370,7 +371,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               {audioUrlError && <p role="alert" className="text-xs text-rose-300">{audioUrlError}</p>}
               {playerError && <p role="alert" className="text-xs text-amber-300">{playerError}</p>}
               <p className="text-[10px] text-slate-400 leading-relaxed">
-                Use um link direto HTTPS para MP3 ou OGG hospedado com permissão de reprodução, ou carregue um áudio do seu computador. Links de páginas YouTube, Spotify e serviços que exigem login não tocam diretamente. Utilize somente músicas que você tem direito de reproduzir.
+                A URL fica salva neste navegador para as próximas visitas (não expira em 30 dias por causa do jogo). A reprodução começa após uma interação. Use um link direto HTTPS para MP3 ou OGG, ou carregue um arquivo do computador. Links de páginas YouTube, Spotify e serviços que exigem login não tocam diretamente. Utilize somente músicas que você tem direito de reproduzir.
               </p>
             </div>
           )}
