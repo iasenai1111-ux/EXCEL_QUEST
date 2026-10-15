@@ -77,10 +77,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="w-full bg-[#101B35]/95 backdrop-blur-md border-b border-[#213556] sticky top-0 z-40 px-3 sm:px-6 py-2 transition">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:flex sm:flex-wrap sm:items-center sm:justify-between gap-2 sm:gap-3">
         
         {/* Left: Videogame Logo + In-Game Stage Switcher */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 min-w-0">
           <button
             onClick={() => {
               soundManager.playClick();
@@ -143,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Center / Right: Student Badge, XP Gauge, Coins & Clean Action Controls */}
-        <div className="flex items-center flex-wrap gap-2 sm:gap-3">
+        <div className="flex items-center justify-center sm:justify-end flex-wrap gap-1.5 sm:gap-3">
           
           {/* XP Progress Gauge */}
           <div className="hidden md:flex flex-col items-end w-32 sm:w-36">
@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Moedas Counter (#FFD166) */}
           <div
-            className="flex items-center gap-1.5 px-3 py-1 bg-[#172747] border border-[#FFD166]/50 rounded-xl text-xs font-mono font-extrabold text-[#FFD166] shadow-sm animate-coin-shine"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#172747] border border-[#FFD166]/50 rounded-xl text-xs font-mono font-extrabold text-[#FFD166] shadow-sm animate-coin-shine"
             title="Moedas Coletadas"
           >
             <span>🪙</span>
@@ -174,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenProfile();
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#172747] hover:bg-[#213556] border border-[#334E77] rounded-xl text-xs text-[#F8FAFC] transition active:scale-95"
+            className="flex items-center gap-1.5 px-2 py-1.5 bg-[#172747] hover:bg-[#213556] border border-[#334E77] rounded-xl text-xs text-[#F8FAFC] transition active:scale-95"
             title="Identificação do Aluno"
           >
             <User className="w-3.5 h-3.5 text-[#22D3EE]" />
@@ -257,11 +257,11 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenTeacherDashboard();
             }}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 bg-[#172747] hover:bg-[#213556] border border-[#334E77] rounded-xl text-[#CBD5E1] text-xs font-semibold transition active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#172747] hover:bg-[#213556] border border-[#334E77] rounded-xl text-[#CBD5E1] text-xs font-semibold transition active:scale-95"
             title="Acessar Painel do Professor"
           >
             <GraduationCap className="w-4 h-4 text-[#22D3EE]" />
-            <span>Professor</span>
+            <span className="hidden sm:inline">Professor</span>
           </button>
 
           {/* ENTREGAR ATIVIDADE (Ciano #0284C7 / #22D3EE) */}
@@ -270,7 +270,7 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenSubmit();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 btn-game btn-game-cyan text-xs font-bold shadow-md active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 btn-game btn-game-cyan text-xs font-bold shadow-md active:scale-95"
             title="Entregar Atividade ao Professor (Google Forms)"
           >
             <Send className="w-3.5 h-3.5 shrink-0" />

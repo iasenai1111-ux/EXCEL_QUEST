@@ -99,8 +99,29 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Level dimensions
   const LEVEL_WIDTH = 2700;
-  const VIEW_WIDTH = 960;
+  // Mobile uses a narrower world viewport instead of shrinking 960px of game to a tiny phone.
+  const [viewWidth, setViewWidth] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches ? 520 : 960
+  );
+  const VIEW_WIDTH = viewWidth;
   const VIEW_HEIGHT = 480;
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 640px)');
+    const syncViewport = () => setViewWidth(mobileQuery.matches ? 520 : 960);
+    syncViewport();
+    mobileQuery.addEventListener('change', syncViewport);
+    return () => mobileQuery.removeEventListener('change', syncViewport);
+  }, []);
+
+  const jumpOnPress = () => {
+    const p = playerRef.current;
+    if (p.isGrounded && !p.isClimbingFlag) {
+      p.vy = p.jumpPower;
+      p.isGrounded = false;
+      soundManager.playJump();
+    }
+  };
   const GROUND_Y = 410;
 
   // Player state ref (for 60fps loop without React re-render lag)
@@ -697,7 +718,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameIdRef.current);
     };
-  }, [stage, isStageCompleted, onCoinCollected, onReachExitPortal, handleLifeLoss, isSprinting]);
+  }, [stage, isStageCompleted, onCoinCollected, onReachExitPortal, handleLifeLoss, isSprinting, VIEW_WIDTH]);
 
   const [isBgmOn, setIsBgmOn] = useState(soundManager.isBGMPlaying());
 
@@ -723,11 +744,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     <div className="relative w-full flex flex-col items-center select-none">
       
       {/* Viewport Frame */}
-      <div className="relative w-full max-w-5xl rounded-3xl overflow-hidden border-2 border-[#334E77] shadow-[0_16px_40px_rgba(16,27,53,0.8)] bg-[#101B35]">
+      <div className="relative w-full max-w-5xl rounded-xl sm:rounded-3xl overflow-hidden border-2 border-[#334E77] shadow-[0_16px_40px_rgba(16,27,53,0.8)] bg-[#101B35]">
         
         {/* Retro Mario-Style HUD Bar */}
-        <div className="absolute top-2.5 left-3 right-3 z-30 flex items-center justify-between text-xs font-mono font-bold text-[#F8FAFC] bg-[#101B35]/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#334E77] shadow-lg">
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="absolute top-1 left-1 right-1 sm:top-2.5 sm:left-3 sm:right-3 z-30 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-xs font-mono font-bold text-[#F8FAFC] bg-[#101B35]/90 backdrop-blur-md px-1.5 sm:px-3.5 py-1 sm:py-2 rounded-lg sm:rounded-xl border border-[#334E77] shadow-lg">
+          <div className="flex items-center gap-1 sm:gap-3">
             <span className="px-2 py-0.5 bg-[#2563EB]/40 text-[#22D3EE] border border-[#2563EB] rounded-lg text-[10px] font-black tracking-wider">
               SENAIZINHO
             </span>
@@ -766,10 +787,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               <Heart className="w-4 h-4 fill-[#EF4444] animate-pulse" />
               <span>x{lives}</span>
             </span>
-            <span className="text-slate-600">•</span>
+            <span className="text-slate-600 hidden sm:inline">•</span>
             <span className="flex items-center gap-1 text-[#22D3EE]">
               <Zap className="w-4 h-4 text-[#22D3EE]" />
-              <span>DERROTADOS: {defeatedEnemies}</span>
+              <span className="hidden sm:inline">DERROTADOS: </span><span>{defeatedEnemies}</span>
             </span>
           </div>
 
@@ -784,7 +805,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               }`}
               title="Música: Carry on Wayward Son (Kansas) - Clique para Ligar/Desligar"
             >
-              <span>🎸 Carry on Wayward Son</span>
+              <span className="hidden sm:inline">🎸 Carry on Wayward Son</span><span className="sm:hidden">🎵</span>
               <span className="font-mono text-[9px] px-1 rounded bg-black/40">
                 {isBgmOn ? 'TOCANDO' : 'PAUSADA'}
               </span>
@@ -833,7 +854,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         {/* The Game Canvas */}
         <canvas
           ref={canvasRef}
-          className="w-full h-auto aspect-[2/1] block cursor-crosshair"
+          className="w-full h-auto block cursor-crosshair touch-pan-y"
+          style={{ aspectRatio: `${VIEW_WIDTH} / ${VIEW_HEIGHT}` }}
           onClick={() => {
             if (isNearTerminal) {
               soundManager.playTerminalOpen();
@@ -852,7 +874,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-[11px] text-[#22D3EE]">
+          <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-[#22D3EE]">
             <span>Terminal em x=1720</span>
             <span>•</span>
             <span>Bandeira em x=2520</span>
@@ -860,79 +882,74 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         </div>
       </div>
 
-      {/* On-Screen Touch / Mouse Controls for School PCs & Tablets */}
-      <div className="mt-3 flex items-center justify-between w-full max-w-5xl px-2 gap-2">
-        {/* Direction Arrows */}
+      {/* Multi-touch controls: pointer capture prevents a movement key staying pressed. */}
+      <div className="mt-3 flex flex-wrap items-center justify-between w-full max-w-5xl px-1 sm:px-2 gap-2 select-none">
         <div className="flex items-center gap-2">
-          <button
-            onMouseDown={() => (keysDownRef.current['arrowleft'] = true)}
-            onMouseUp={() => (keysDownRef.current['arrowleft'] = false)}
-            onTouchStart={() => (keysDownRef.current['arrowleft'] = true)}
-            onTouchEnd={() => (keysDownRef.current['arrowleft'] = false)}
-            className="w-12 h-12 btn-game btn-game-surface rounded-2xl flex items-center justify-center text-[#F8FAFC]"
-            aria-label="Mover para esquerda"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <button
-            onMouseDown={() => (keysDownRef.current['arrowright'] = true)}
-            onMouseUp={() => (keysDownRef.current['arrowright'] = false)}
-            onTouchStart={() => (keysDownRef.current['arrowright'] = true)}
-            onTouchEnd={() => (keysDownRef.current['arrowright'] = false)}
-            className="w-12 h-12 btn-game btn-game-surface rounded-2xl flex items-center justify-center text-[#F8FAFC]"
-            aria-label="Mover para direita"
-          >
-            <ArrowRight className="w-6 h-6" />
-          </button>
+          {([
+            ['arrowleft', ArrowLeft, 'Mover para esquerda'],
+            ['arrowright', ArrowRight, 'Mover para direita']
+          ] as const).map(([key, Icon, label]) => (
+            <button
+              key={key}
+              type="button"
+              aria-label={label}
+              onPointerDown={event => {
+                event.preventDefault();
+                event.currentTarget.setPointerCapture(event.pointerId);
+                keysDownRef.current[key] = true;
+              }}
+              onPointerUp={() => { keysDownRef.current[key] = false; }}
+              onPointerCancel={() => { keysDownRef.current[key] = false; }}
+              onLostPointerCapture={() => { keysDownRef.current[key] = false; }}
+              onContextMenu={event => event.preventDefault()}
+              className="w-14 h-14 sm:w-12 sm:h-12 touch-none btn-game btn-game-surface rounded-2xl flex items-center justify-center text-[#F8FAFC] active:bg-blue-600"
+            >
+              <Icon className="w-7 h-7" />
+            </button>
+          ))}
         </div>
-
-        {/* Action Buttons: Sprint, Jump, Terminal */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           <button
+            type="button"
             onClick={() => setIsSprinting(!isSprinting)}
-            className={`px-3.5 py-2.5 btn-game rounded-2xl text-xs font-bold flex items-center gap-1.5 ${
+            className={`min-h-12 px-2.5 sm:px-3.5 btn-game rounded-xl text-xs font-bold flex items-center gap-1.5 ${
               isSprinting
-                ? 'bg-[#FF9F1C] text-[#0F172A] border-2 border-[#FFD166] shadow-[0_4px_0_#B45309]'
+                ? 'bg-[#FF9F1C] text-[#0F172A] border-2 border-[#FFD166]'
                 : 'btn-game-surface text-[#FFD166]'
             }`}
-            title="Segurar Shift no teclado também ativa corrida rápida"
+            aria-label={isSprinting ? 'Desativar corrida' : 'Ativar corrida'}
           >
-            <Zap className="w-4 h-4 fill-current" />
-            <span>{isSprinting ? 'CORRENDO' : 'CORRER (SHIFT)'}</span>
+            <Zap className="w-4 h-4" />
+            <span className="hidden sm:inline">{isSprinting ? 'CORRENDO' : 'CORRER (SHIFT)'}</span>
+            <span className="sm:hidden">CORRER</span>
           </button>
-
           <button
-            onMouseDown={() => {
-              const p = playerRef.current;
-              if (p.isGrounded && !p.isClimbingFlag) {
-                p.vy = p.jumpPower;
-                p.isGrounded = false;
-                soundManager.playJump();
-              }
+            type="button"
+            onPointerDown={event => {
+              event.preventDefault();
+              jumpOnPress();
             }}
-            onTouchStart={() => {
-              const p = playerRef.current;
-              if (p.isGrounded && !p.isClimbingFlag) {
-                p.vy = p.jumpPower;
-                p.isGrounded = false;
-                soundManager.playJump();
-              }
+            onClick={event => {
+              if (event.detail === 0) jumpOnPress();
             }}
-            className="px-5 py-2.5 btn-game btn-game-play text-xs flex items-center gap-1.5"
+            className="min-h-14 sm:min-h-12 px-4 sm:px-5 touch-none btn-game btn-game-play text-xs flex items-center gap-1.5"
+            aria-label="Pular"
           >
             <ArrowUp className="w-5 h-5 text-white" />
             <span>PULAR</span>
           </button>
-
           <button
+            type="button"
             onClick={() => {
               soundManager.playTerminalOpen();
               onOpenTerminal();
             }}
-            className="px-4 py-2.5 btn-game btn-game-cyan text-xs flex items-center gap-1.5"
+            className="min-h-12 px-3 sm:px-4 btn-game btn-game-cyan text-xs flex items-center gap-1.5"
+            aria-label="Abrir terminal Excel"
           >
             <Monitor className="w-4 h-4 text-white" />
-            <span>Terminal</span>
+            <span className="hidden sm:inline">Terminal</span>
+            <span className="sm:hidden">Excel</span>
           </button>
         </div>
       </div>

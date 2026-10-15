@@ -110,7 +110,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-10 gap-1.5">
+              <div className="grid grid-cols-10 gap-0.5 sm:gap-1.5">
                 {LEVEL_1_STAGES.map((st) => {
                   const isDone = progress.completedStages.includes(st.id);
                   const isCurrent = st.id === progress.highestUnlockedStageId;
@@ -119,7 +119,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                     <div
                       key={st.id}
                       title={`Fase ${st.id}: ${st.title} (${st.challenge.operationName})`}
-                      className={`h-7 rounded-lg flex items-center justify-center font-mono text-[10px] font-bold transition border ${
+                      className={`h-6 sm:h-7 rounded-md sm:rounded-lg flex items-center justify-center font-mono text-[10px] font-bold transition border ${
                         isDone
                           ? 'bg-[#22C55E]/20 text-[#22C55E] border-[#22C55E]/60 shadow-sm'
                           : isCurrent
@@ -148,7 +148,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             {/* Videogame Title Block */}
             <div className="mb-4">
               {/* Colorful 3D Arcade Lettering: SUPER SENAI BROS. */}
-              <div className="flex items-center justify-center lg:justify-start gap-1 sm:gap-1.5 mb-2">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1 sm:gap-1.5 mb-2">
                 <span className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center font-black text-white bg-[#EF4444] rounded-xl border-2 border-[#991B1B] shadow-[0_3px_0_#7F1D1D] font-mono text-base">
                   S
                 </span>
@@ -173,10 +173,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
               {/* Main Game Logo: EXCEL WORLD */}
               <div className="relative inline-block">
-                <h1 className="text-4xl sm:text-6xl lg:text-6xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-[#FFFBEB] via-[#FFD166] to-[#FF9F1C] drop-shadow-[0_4px_0_#78350F] font-mono uppercase">
+                <h1 className="text-3xl min-[400px]:text-4xl sm:text-6xl lg:text-6xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-[#FFFBEB] via-[#FFD166] to-[#FF9F1C] drop-shadow-[0_4px_0_#78350F] font-mono uppercase">
                   EXCEL WORLD
                 </h1>
-                <div className="absolute -top-3 -right-6 sm:-right-8 rotate-12">
+                <div className="absolute -top-3 -right-1 sm:-right-8 rotate-12">
                   <span className="text-[10px] sm:text-xs font-black bg-[#22C55E] text-[#0F172A] px-2.5 py-0.5 rounded-full border-2 border-white shadow-lg flex items-center gap-1 animate-bounce">
                     ★ 10 FASES!
                   </span>
