@@ -37,6 +37,7 @@ export default function App() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [progress, setProgress] = useState<GameProgress>(loadGameProgress());
   const [currentStageId, setCurrentStageId] = useState<number>(1);
+  const [stageRestartToken, setStageRestartToken] = useState(0);
   const [isRootGodMode, setIsRootGodMode] = useState<boolean>(false);
 
   // Modals state
@@ -107,15 +108,9 @@ export default function App() {
     setGameMode('menu');
   };
 
-  // Game Over: Reset to Stage 1 and lock all other stages automatically
+  // Game over reinicia a fase atual, sem apagar as fórmulas já resolvidas.
   const handleGameOver = () => {
     setIsGameOverOpen(true);
-    setProgress((prev) => ({
-      ...prev,
-      highestUnlockedStageId: 1,
-      completedStages: [],
-    }));
-    setCurrentStageId(1);
   };
 
   const handleSaveProfile = (newProfile: StudentProfile) => {
@@ -365,6 +360,7 @@ export default function App() {
 
             {/* The 2D Canvas Adventure Viewport */}
             <GameCanvas
+              key={`${currentStageId}-${stageRestartToken}`}
               stage={currentStage}
               isStageCompleted={isCurrentStageCompleted}
               onOpenTerminal={() => setIsMiniExcelOpen(true)}
@@ -582,9 +578,9 @@ export default function App() {
         stageNumber={currentStageId}
         onRestartAtStage1={() => {
           setIsGameOverOpen(false);
-          setCurrentStageId(1);
+          setStageRestartToken(value => value + 1);
           setGameMode('playing');
-          soundManager.startGameplayBGM();
+          if (!youtubeVideoId) soundManager.startGameplayBGM();
         }}
         onGoToMenu={() => {
           setIsGameOverOpen(false);
